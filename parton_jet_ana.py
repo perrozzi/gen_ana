@@ -33,13 +33,11 @@ events = stdhepReader.UseBranch('Event')
 numberOfEntries = stdhepReader.GetEntries()
 fastjet = jet_file.Get('my_Tree')
 
-c1 = ROOT.TCanvas('c1','c1',1000,1000)
-c1.Divide(2,2)
 
 # book histos
 histos = histo_dict()
-histos.add('mbb',150)
-histos.add('mbbj',150)
+histos.add('mbb',40,140)
+histos.add('mbbj',40,140)
 histos['mbbj'].SetLineColor(ROOT.kRed)
 histos.add('mll',50,150)
 histos.add('njets',10)
@@ -54,15 +52,15 @@ histos['b1j_pt'].SetLineColor(ROOT.kRed)
 histos.add('dR0',0,1,0.05)
 histos.add('dR1',0,1,0.05)
 histos['dR1'].SetLineColor(ROOT.kGreen)
-histos.add('b0j_dPt',0,1,0.01)
-histos.add('b1j_dPt',0,1,0.01)
+histos.add('b0j_dPt',-0.1,0.9,0.01)
+histos.add('b1j_dPt',-0.1,0.9,0.01)
 
 
 # assert files have the same number of entries (ExRoot delets first and last (empty) events from STDHEP already)
 assert numberOfEntries  == fastjet.GetEntries()-2
 
 # progress bar gimick
-print 'looping over %s events'%numberOfEntries
+print 'analyzing %s events'%numberOfEntries
 pb = progbar(30)
 step = numberOfEntries/pb.width
 
@@ -119,39 +117,67 @@ for entry in xrange(numberOfEntries):
                         particle.Phi,
                         particle.E)
 
-    if len(bs) == 2 and len(jets) > 1:
+    if len(ls) > 1 and len(bs) > 1 and len(jets) > 1: 
+
+        # born level leptons
+        ls = sorted(ls, key=lambda x: x.Pt(), reverse=True)
+        z = ls[0]+ls[1]
+
+        if z.Pt() < 100:
+            continue
+
+        # born level bs from h decay
         bs = sorted(bs, key=lambda x: x.Pt(), reverse=True)
         h = bs[0]+bs[1]
+
+        if h.Pt() < 50:
+            continue
+        if abs(bs[0].Eta()) > 2.5:
+            continue
+        if abs(bs[1].Eta()) > 2.5:
+            continue
+        if bs[1].Pt() < 20:
+            continue
+
+
+        #match bs to jets:
+        #leading jet
+        dRs = [deltaR(bs[0],jet) for jet in jets]
+        dR0 = min(dRs)
+        b0_jet = jets.pop(dRs.index(dR0))
+        #second jet
+        dRs = [deltaR(bs[1],jet) for jet in jets]
+        dR1 = min(dRs)
+        b1_jet = jets.pop(dRs.index(dR1))
+
+        if dR0 > 0.3 or dR1 > 0.3:
+            continue
+        
+        # higgs candidate
+        hc = b0_jet + b1_jet
+
+        #Fill Histos
+        histos['dR0'].Fill(dR0,weight)
+        histos['dR1'].Fill(dR1,weight)
+        histos['b0j_pt'].Fill(b0_jet.Pt(),weight)
+        histos['b0j_dPt'].Fill((bs[0].Pt()-b0_jet.Pt())/bs[0].Pt(),weight)
+        histos['b1j_pt'].Fill(b1_jet.Pt(),weight)
+        histos['b1j_dPt'].Fill((bs[1].Pt()-b1_jet.Pt())/bs[1].Pt(),weight)
+
+        histos['l0_pt'].Fill(ls[0].Pt(),weight)
+        histos['l1_pt'].Fill(ls[1].Pt(),weight)
+        histos['mll'].Fill(z.M(),weight)
         histos['mbb'].Fill(h.M(),weight)
+
+        histos['mbbj'].Fill(hc.M(),weight)
         histos['b0_pt'].Fill(bs[0].Pt(),weight)
         histos['b1_pt'].Fill(bs[1].Pt(),weight)
 
-        #match bs to jets:
+    else:
+        continue
 
-        #leading jet
-        dRs = [deltaR(bs[0],jet) for jet in jets]
-        histos['dR0'].Fill(min(dRs),weight)
-        b0_jet = jets.pop(dRs.index(min(dRs)))
-        histos['b0j_pt'].Fill(b0_jet.Pt(),weight)
-        histos['b0j_dPt'].Fill((bs[0].Pt()-b0_jet.Pt())/bs[0].Pt(),weight)
-
-        #second jet
-        dRs = [deltaR(bs[1],jet) for jet in jets]
-        histos['dR1'].Fill(min(dRs),weight)
-        b1_jet = jets.pop(dRs.index(min(dRs)))
-        histos['b1j_pt'].Fill(b1_jet.Pt(),weight)
-        histos['b1j_dPt'].Fill((bs[1].Pt()-b1_jet.Pt())/bs[1].Pt(),weight)
-        
-        # higgs candidate
-        h = b0_jet + b1_jet
-        histos['mbbj'].Fill(h.M(),weight)
-
-    if len(ls) == 2:
-        ls = sorted(ls, key=lambda x: x.Pt(), reverse=True)
-        histos['l0_pt'].Fill(ls[0].Pt(),weight)
-        histos['l1_pt'].Fill(ls[1].Pt(),weight)
-        z = ls[0]+ls[1]
-        histos['mll'].Fill(z.M(),weight)
+c1 = ROOT.TCanvas('c1','c1',1000,1000)
+c1.Divide(2,2)
 
 c1.cd(1)
 histos['mbb'].Draw()
