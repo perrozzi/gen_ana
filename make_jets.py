@@ -23,17 +23,22 @@
 #      59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #----------------------------------------------------------------------
 from spartyjet import *
+import sys
 #===============================================
 
+infile = sys.argv[1]
+outname = sys.argv[2]
+assert outname != ''
 
 # StdHep
-input = getInputMaker('/shome/peller/Madgraph/MG5_aMC_v2_1_0/ZH/Events/run_05/events_HERWIG6_0.hep')
+input = getInputMaker(infile)
+#input = getInputMaker('/shome/peller/Madgraph/MG5_aMC_v2_1_0/ZH/Events/run_05/events_HERWIG6_0.hep')
 #input = getInputMaker('/shome/peller/SpartyJet/spartyjet-4.0.2/data/ttbar_smallrun_pythia_events.hep')
 input.reject_bad_input(True)
 input.set_skip_empty_events(False)
 
 # output ROOT file
-outfile = "../data/output/test.root"
+outfile = "../data/output/%s.root"%outname
 
 print "Now running on",input.name()
 
@@ -55,7 +60,7 @@ builder.add_jetTool_input(SJ.JetInputPdgIdSelectorTool(stdVector(-16,16,-14,14,-
 #builder.add_jetTool_input(SJ.JetEtaCentralSelectorTool(-2.5,2.5))
 
 # Configure output--------------------------------
-builder.configure_output("my_Tree", outfile)
+builder.configure_output("AK5", outfile)
 
 #ptmin
 #builder.add_jetTool(SJ.FastJet.SelectorTool(fj.SelectorPtMin(10.0), 'PtCut'))
