@@ -1,6 +1,10 @@
 from BetterConfigParser import BetterConfigParser
 from collections import defaultdict
 
+class sample(object):
+    def __repr__(self):
+        return self.id
+
 class samples(object):
     def __init__(self,config):
         self.samples = []
@@ -8,7 +12,8 @@ class samples(object):
         self.config.read(config)
         for section in self.config.sections():
             # empty object :)
-            self.samples.append(lambda:sample)
+            self.samples.append(sample())
+            setattr(self.samples[-1],'id',section)
             for key, value in self.config.items(section):
                 setattr(self.samples[-1],key,value)
 
@@ -33,5 +38,6 @@ if __name__ == '__main__':
     s = samples(file)
     print s['process']
     print s['xsec']
+    print s.group
     for bla in s.group['DY']:
         print bla.xsec

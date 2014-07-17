@@ -14,17 +14,24 @@ class histo_dict(dict):
             bins = round((args[1]-args[0])/args[2])
             self[name] = ROOT.TH1F(name,name,int(bins),args[0],args[1])
 
-    def dump(self,list=None,format='pdf'):
+    def dump(self,list=None,format='pdf',prefix=''):
         c = ROOT.TCanvas('c','c',600,400)
         if not list:
             for key,histo in self.items():
                 histo.Draw()
-                c.SaveAs('%s.%s'%(key,format))
+                c.SaveAs('%s%s.%s'%(prefix,key,format))
         else:
             for key in list:
                 self[key].Draw()
-                c.SaveAs('%s.%s'%(key,format))
+                c.SaveAs('%s%s.%s'%(prefix,key,format))
 
+    def write(self,list=None):
+        if not list:
+            for key,histo in self.items():
+                histo.Write()
+        else:
+            for key in list:
+                self[key].Write()
 
 if __name__ == '__main__':
     histos = histo_dict()

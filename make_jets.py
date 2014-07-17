@@ -26,19 +26,19 @@ from spartyjet import *
 import sys
 #===============================================
 
-infile = sys.argv[1]
-outname = sys.argv[2]
-assert outname != ''
+name = sys.argv[1]
+#outname = sys.argv[2]
+assert name != ''
 
 # StdHep
-input = getInputMaker(infile)
+input = getInputMaker("../data/input/%s.lhe.hep"%name)
 #input = getInputMaker('/shome/peller/Madgraph/MG5_aMC_v2_1_0/ZH/Events/run_05/events_HERWIG6_0.hep')
 #input = getInputMaker('/shome/peller/SpartyJet/spartyjet-4.0.2/data/ttbar_smallrun_pythia_events.hep')
 input.reject_bad_input(True)
 input.set_skip_empty_events(False)
 
 # output ROOT file
-outfile = "../data/output/%s.root"%outname
+outfile = "../data/output/%s.root"%name
 
 print "Now running on",input.name()
 
@@ -56,7 +56,7 @@ builder.add_analysis(analysis)
 # ignore neutrinos, muons and electrons
 # mu and e with Pt > 20. rejected in input maker
 #builder.add_jetTool_input(SJ.JetInputPdgIdSelectorTool(stdVector(-16,16,-14,14,-13,13,-12,12,-11,11)))
-builder.add_jetTool_input(SJ.JetInputPdgIdSelectorTool(stdVector(-16,16,-14,14,-12,12)))
+#builder.add_jetTool_input(SJ.JetInputPdgIdSelectorTool(stdVector(-16,16,-14,14,-12,12)))
 #builder.add_jetTool_input(SJ.JetEtaCentralSelectorTool(-2.5,2.5))
 
 # Configure output--------------------------------
