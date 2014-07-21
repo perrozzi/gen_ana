@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import ROOT
 import sys
 import itertools
@@ -22,8 +23,16 @@ def deltaR(vec1,vec2):
 
 group = 'ZH'
 #group = 'ZH_inclusive'
+#group = 'ZH_MG_012j'
+#group = 'ZH_MG_0j'
 
-overlay = True
+# Herwig True | Pythia False ?
+weighted = False
+# ickkw reweighted True
+clone = False
+# FxFx True
+overlay = False
+normalize = True
 
 collection = parse.samples('../data/samples_highstat.cfg')
 #collection = parse.samples('../data/samples.cfg')
@@ -143,7 +152,12 @@ for sample in samples:
     jet_file = ROOT.TFile(jet_f_name)
     outfile.cd()
 
-    stdhep = hep_file.Get('STDHEP')
+    _stdhep = hep_file.Get('STDHEP')
+    if clone:
+        print 'cloning...'
+        stdhep = _stdhep.CopyTree('GenParticle_size > 0')
+    else:
+        stdhep = _stdhep
     stdhepReader = ROOT.ExRootTreeReader(stdhep)
     particles = stdhepReader.UseBranch('GenParticle')
     events = stdhepReader.UseBranch('Event')
@@ -169,7 +183,11 @@ for sample in samples:
         fastjet.GetEntry(entry+1)
 
         # EVENT gen_weight
-        gen_weight = events[0].Weight
+        if weighted:
+            gen_weight = events[0].Weight
+        else:
+            gen_weight = 1.
+
 
         event_weight = gen_weight*sample_weight
 
@@ -321,6 +339,9 @@ for sample in samples:
 
     hep_file.Close()
     jet_file.Close()
+
+if normalize:
+    histos.normalize()
 
 c1 = ROOT.TCanvas('c1','c1',1000,1000)
 c1.Divide(2,2)

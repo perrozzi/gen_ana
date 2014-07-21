@@ -33,6 +33,18 @@ class histo_dict(dict):
             for key in list:
                 self[key].Write()
 
+    def normalize(self,list=None):
+        if not list:
+            for key,histo in self.items():
+                scale = histo.Integral()
+                if not scale == 0:
+                    histo.Scale(1./scale)
+        else:
+            for key in list:
+                scale = self[key].Integral()
+                if not scale == 0:
+                    self[key].Scale(1./scale)
+
 if __name__ == '__main__':
     histos = histo_dict()
     histos.add('test',10)
