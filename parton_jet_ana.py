@@ -3,11 +3,11 @@ import ROOT
 import sys
 import itertools
 import math
-from histo_dict import histo_dict
-from progbar import progbar
+from tools.histo_dict import histo_dict
+from tools.progbar import progbar
 import warnings
 warnings.filterwarnings( action='ignore', category=RuntimeWarning, message='.*TCompare*')
-import parse
+import tools.parse
 
 # ExRoot Tree Container Class
 ROOT.gSystem.Load('/shome/peller/Madgraph/MG5_aMC_v2_1_0/ExRootAnalysis/lib/libExRootAnalysis.so')
@@ -21,7 +21,8 @@ def deltaRpT(vec1,vec2):
 def deltaR(vec1,vec2):
     return vec1.DeltaR(vec2)
 
-group = 'ZH'
+group = 'ZH50'
+#group = 'ZH30'
 #group = 'ZH_inclusive'
 #group = 'ZH_MG_012j'
 #group = 'ZH_MG_0j'
@@ -38,7 +39,7 @@ collection = parse.samples('../data/samples_highstat.cfg')
 #collection = parse.samples('../data/samples.cfg')
 
 samples = collection.group[group]
-outfile = ROOT.TFile('%s.root'%group,'RECREATE')
+outfile = ROOT.TFile('../data/%s.root'%group,'RECREATE')
 
 # book histos
 histos = histo_dict()
@@ -392,7 +393,7 @@ if overlay:
 #histos['b1_pt2j'].Draw("same")
 
 c1.Update()
-c1.SaveAs('%s.pdf'%group)
+c1.SaveAs('plots/%s.pdf'%group)
 
 histos.write()
-histos.dump(prefix='%s_'%group)
+histos.dump(prefix='plots/%s_'%group)
