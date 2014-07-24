@@ -7,6 +7,7 @@ import warnings
 warnings.filterwarnings( action='ignore', category=RuntimeWarning, message='.*TCompare*')
 import tools.parse as parse
 import array
+import itertools
 
 # ExRoot Tree Container Class
 ROOT.gSystem.Load('/shome/peller/Madgraph/MG5_aMC_v2_1_0/ExRootAnalysis/lib/libExRootAnalysis.so')
@@ -178,14 +179,16 @@ for sample in samples:
             dRs = [deltaR(bs[1],jet) for jet in jets]
             dR1 = min(dRs)
             b1_jet = jets.pop(dRs.index(dR1))
-            
+
+            hc = b0_jet + b1_jet
+                
             # higgs candidate
             H.clear()
-            H.push_back(b0_jet + b1_jet)
+            H.push_back(hc)
             h_dau.clear()
             h_dau.push_back(b0_jet)
             h_dau.push_back(b1_jet)
-        
+
             aJets.clear()
             n_aJets[0] = len(jets)
             if n_aJets[0] > 0:
