@@ -8,19 +8,11 @@ warnings.filterwarnings( action='ignore', category=RuntimeWarning, message='.*TC
 import tools.parse as parse
 import array
 import itertools
+from tools.delta import *
 
 # ExRoot Tree Container Class
 ROOT.gSystem.Load('/shome/peller/Madgraph/MG5_aMC_v2_1_0/ExRootAnalysis/lib/libExRootAnalysis.so')
 ROOT.gROOT.ProcessLine('.L VectorTLorentzVector_h.so')
-
-def deltaRpT(vec1,vec2):
-    dEta = vec1.Eta() - vec2.Eta()
-    dPhi = ROOT.TVector2.Phi_mpi_pi(vec1.Phi() - vec2.Phi())
-    dPt = vec1.Pt() - vec2.Pt()
-    return math.sqrt(dEta*dEta + dPhi*dPhi + dPt*dPt)
-
-def deltaR(vec1,vec2):
-    return vec1.DeltaR(vec2)
 
 #group = 'ZH50'
 group = 'ZH'
