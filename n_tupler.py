@@ -36,20 +36,16 @@ outfile.cd()
 mytree = ROOT.TTree('mytree','mytree')
 
 # Higgs branches
-H = ROOT.TLorentzVector()
-mytree.Branch( "H", "TLorentzVector", H)
-h0 = ROOT.TLorentzVector()
-h1 = ROOT.TLorentzVector()
-mytree.Branch( "h0", "TLorentzVector", h0)
-mytree.Branch( "h1", "TLorentzVector", h1)
+H = ROOT.std.vector(ROOT.TLorentzVector)()
+mytree.Branch( "H", "vector<TLorentzVector>", H)
+h_dau =ROOT.std.vector(ROOT.TLorentzVector)()
+mytree.Branch( "h_dau", "vector<TLorentzVector>", h_dau)
 
 # Z branches
-Z = ROOT.TLorentzVector()
-mytree.Branch( "Z", "TLorentzVector", Z)
-z0 = ROOT.TLorentzVector()
-z1 = ROOT.TLorentzVector()
-mytree.Branch( "z0", "TLorentzVector", z0)
-mytree.Branch( "z1", "TLorentzVector", z1)
+Z = ROOT.std.vector(ROOT.TLorentzVector)()
+mytree.Branch( "Z", "vector<TLorentzVector>", Z)
+z_dau = ROOT.std.vector(ROOT.TLorentzVector)()
+mytree.Branch( "z_dau", "vector<TLorentzVector>", z_dau)
 
 # Jet branches
 aJets = ROOT.std.vector(ROOT.TLorentzVector)()
@@ -161,9 +157,11 @@ for sample in samples:
 
             # born level leptons
             ls = sorted(ls, key=lambda x: x.Pt(), reverse=True)
-            Z = ls[0]+ls[1]
-            z0 = ls[0]
-            z1 = ls[1]
+            Z.clear()
+            Z.push_back(ls[0]+ls[1])
+            z_dau.clear()
+            z_dau.push_back(ls[0])
+            z_dau.push_back(ls[1])
     
         if len(bs) > 1 and len(jets) > 1:
 
@@ -182,9 +180,11 @@ for sample in samples:
             b1_jet = jets.pop(dRs.index(dR1))
             
             # higgs candidate
-            H = b0_jet + b1_jet
-            h0 = b0_jet
-            h1 = b1_jet
+            H.clear()
+            H.push_back(b0_jet + b1_jet)
+            h_dau.clear()
+            h_dau.push_back(b0_jet)
+            h_dau.push_back(b1_jet)
         
             aJets.clear()
             n_aJets[0] = len(jets)
