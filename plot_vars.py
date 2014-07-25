@@ -8,9 +8,9 @@ styles = [1,2,3,4,5]
 
 outfile = ROOT.TFile('test.root')
 
-vars = ['Z.M()','Z.Pt()','Z.Eta()','n_aJets','aJets[0].Pt()']
-ranges = ['(50,40,140)','(50,0,250)','(50,-5,5)','(10,0,10)','(50,0,250)']
-var_names = ['mass(Z) (GeV)','p_{T}(Z) (GeV)','Eta(Z)','#(additional jets)','p_{T}(leading jet) (GeV)']
+vars = ['Z.M()','Z.Pt()','Z.Eta()','n_aJets','aJets[0].Pt()','aJets[0].Eta()','aJets[1].Pt()','aJets[1].Eta()','H.Pt()','H.M()','H.Eta()','genH.Pt()','genH.M()','genH.Eta()']
+ranges = ['(50,40,140)','(50,0,250)','(50,-5,5)','(10,0,10)','(50,0,250)','(50,-5,5)','(50,0,250)','(50,-5,5)','(50,0,250)','(50,75,175)','(50,-5,5)','(50,0,250)','(40,124.5,125.5)','(50,-5,5)']
+var_names = ['mass(Z) (GeV)','p_{T}(Z) (GeV)','Eta(Z)','#(additional jets)','p_{T}(leading jet) (GeV)','Eta(leading jet)','p_{T}(second jet) (GeV)','Eta(second jet)','P_{T}(H(jj)) (GeV)','mass(H(jj)) (GeV)','Eta(H(jj))','P_{T}(H) (GeV)','mass(H) (GeV)','Eta(H)']
 
 for var,range,var_name in zip(vars,ranges,var_names):
 
