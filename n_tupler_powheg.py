@@ -23,8 +23,12 @@ mytree = ROOT.TTree('mytree','mytree')
 # Higgs branches
 H = ROOT.std.vector(ROOT.TLorentzVector)()
 mytree.Branch( "H", "vector<TLorentzVector>", H)
+genH = ROOT.std.vector(ROOT.TLorentzVector)()
+mytree.Branch( "genH", "vector<TLorentzVector>", genH)
 h_dau =ROOT.std.vector(ROOT.TLorentzVector)()
 mytree.Branch( "h_dau", "vector<TLorentzVector>", h_dau)
+dR = array.array('f',[0]*2)
+mytree.Branch('dR', dR, 'dR[2]/F')
 
 # Z branches
 Z = ROOT.std.vector(ROOT.TLorentzVector)()
@@ -51,8 +55,7 @@ infile = ROOT.TFile(infilename)
 particles= infile.Get('Particles')
 ak5 = infile.Get('AK5')
 
-numberOfEntries = 3000
-#numberOfEntries = particles.GetEntries()
+numberOfEntries = particles.GetEntries()
 
 # progress bar gimick
 print 'analyzing %s events'%numberOfEntries
@@ -123,19 +126,19 @@ for entry in xrange(numberOfEntries):
 
 
     if len(hs) > 0 and len(zs) > 0:
-        #H.clear()
-        #H.push_back(hs[0])
+        genH.clear()
+        genH.push_back(hs[0])
         Z.clear()
         Z.push_back(zs[0])
         #mytree.Fill()
 
     bs = []
     if len(all_bs) > 1:
-        dR = 999999
+        idR = 999999
         for x,y in itertools.combinations(all_bs,2):
             delta = deltaRpT(x + y,hs[0])
-            if delta < dR:
-                dR = delta
+            if delta < idR:
+                idR = delta
                 b0 = x
                 b1 = y
         bs.append(b0)
@@ -143,11 +146,11 @@ for entry in xrange(numberOfEntries):
 
     ls = []
     if len(all_ls) > 1:
-        dR = 999999
+        idR = 999999
         for x,y in itertools.combinations(all_ls,2):
             delta = deltaRpT(x+y,zs[0])
-            if delta < dR:
-                dR = delta
+            if delta < idR:
+                idR = delta
                 l0 = x
                 l1 = y
         ls.append(l0)
@@ -176,6 +179,9 @@ for entry in xrange(numberOfEntries):
         dRs = [deltaR(bs[1],jet) for jet in jets]
         dR1 = min(dRs)
         b1_jet = jets.pop(dRs.index(dR1))
+
+        dR[0] = deltaR(bs[0],b0_jet)
+        dR[1] = deltaR(bs[1],b1_jet)
             
         # higgs candidate
         H.clear()

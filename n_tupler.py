@@ -15,13 +15,15 @@ ROOT.gSystem.Load('/shome/peller/Madgraph/MG5_aMC_v2_1_0/ExRootAnalysis/lib/libE
 ROOT.gROOT.ProcessLine('.L VectorTLorentzVector_h.so')
 
 #group = 'ZH50'
-group = 'ZH'
+#group = 'ZH'
 #group = 'ZH_inclusive'
 #group = 'ZH_MG_012j'
-#group = 'ZH_MG_0j'
+group = 'ZH_MG_0j'
 
-#collection = parse.samples('../data/samples_highstat.cfg')
-collection = parse.samples('../data/samples.cfg')
+clone = True
+
+collection = parse.samples('../data/samples_highstat.cfg')
+#collection = parse.samples('../data/samples.cfg')
 
 outfile = ROOT.TFile('../data/tree_%s.root'%group,'RECREATE')
 outfile.cd()
@@ -31,8 +33,13 @@ mytree = ROOT.TTree('mytree','mytree')
 # Higgs branches
 H = ROOT.std.vector(ROOT.TLorentzVector)()
 mytree.Branch( "H", "vector<TLorentzVector>", H)
+genH = ROOT.std.vector(ROOT.TLorentzVector)()
+mytree.Branch( "genH", "vector<TLorentzVector>", genH)
 h_dau =ROOT.std.vector(ROOT.TLorentzVector)()
 mytree.Branch( "h_dau", "vector<TLorentzVector>", h_dau)
+dR = array.array('f',[0]*2)
+mytree.Branch( 'dR', dR, 'dR[2]/F')
+
 
 # Z branches
 Z = ROOT.std.vector(ROOT.TLorentzVector)()
@@ -52,7 +59,6 @@ mytree.Branch('weight',weight,'weight/F')
 
 weighted = False
 # ickkw reweighted True
-clone = False
 
 
 samples = collection.group[group]
@@ -66,7 +72,7 @@ for sample in samples:
     jet_f_name = '../data/output/' + sample.id + '.root'
     hep_file = ROOT.TFile(hep_f_name)
     jet_file = ROOT.TFile(jet_f_name)
-
+    outfile.cd()
     _stdhep = hep_file.Get('STDHEP')
     if clone:
         print 'cloning...'
@@ -113,12 +119,13 @@ for sample in samples:
 
         # make jet 4-vectors
         for jet in xrange(AK5_N):
-            jets.append(ROOT.TLorentzVector())
-            jets[-1].SetPtEtaPhiE(
-                    fastjet.AK5_pt[jet],
-                    fastjet.AK5_eta[jet],
-                    fastjet.AK5_phi[jet],
-                    fastjet.AK5_e[jet])
+            if fastjet.AK5_pt[jet] > 20.:
+                jets.append(ROOT.TLorentzVector())
+                jets[-1].SetPtEtaPhiE(
+                        fastjet.AK5_pt[jet],
+                        fastjet.AK5_eta[jet],
+                        fastjet.AK5_phi[jet],
+                        fastjet.AK5_e[jet])
         jets = sorted(jets, key=lambda x: x.Pt(), reverse=True)
 
         for particle in particles:
@@ -160,7 +167,8 @@ for sample in samples:
 
             # born level bs from h decay
             bs = sorted(bs, key=lambda x: x.Pt(), reverse=True)
-            h = bs[0]+bs[1]
+            genH.clear()
+            genH.push_back(bs[0]+bs[1])
 
             #match bs to jets:
             #leading jet
@@ -171,6 +179,9 @@ for sample in samples:
             dRs = [deltaR(bs[1],jet) for jet in jets]
             dR1 = min(dRs)
             b1_jet = jets.pop(dRs.index(dR1))
+
+            dR[0] = dR0
+            dR[1] = dR1
 
             hc = b0_jet + b1_jet
                 
