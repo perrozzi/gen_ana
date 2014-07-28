@@ -56,6 +56,7 @@ particles= infile.Get('Particles')
 ak5 = infile.Get('AK5')
 
 numberOfEntries = particles.GetEntries()
+#numberOfEntries = 1000
 
 # progress bar gimick
 print 'analyzing %s events'%numberOfEntries
@@ -89,14 +90,15 @@ for entry in xrange(numberOfEntries):
 
     hs = []
     zs = []
-    all_bs = []
-    all_ls = []
+    bs = []
+    ls = []
 
     for p in xrange(particles.particles_size):
         # from hard interaction
         status = particles.status[p]
         pdgId = particles.pdgId[p]
-        if (status == 3 and (pdgId == 23 or pdgId == 25)) or (status == 2 and abs(pdgId) == 5) or (status == 1 and (abs(pdgId) == 11 or abs(pdgId) ==13)):
+        mother = particles.particles_mother[p]
+        if (status == 3 and (pdgId == 23 or pdgId == 25)) or (mother == 25 and abs(pdgId) == 5) or (mother == 23 and (abs(pdgId) == 11 or abs(pdgId) ==13)):
 
             particle = ROOT.TLorentzVector()
             particle.SetPtEtaPhiM(
@@ -108,21 +110,19 @@ for entry in xrange(numberOfEntries):
             if status == 3:
                 if pdgId == 23:
                     zs.append(particle)
-                else:
+                elif pdgId == 25:
                     hs.append(particle)
             elif abs(pdgId) == 5:
-                if particle.Pt() > 10:
-                    all_bs.append(particle)
+                bs.append(particle)
 
             else:
-                if particle.Pt() > 10:
-                    all_ls.append(particle)
+                ls.append(particle)
 
 
     hs = sorted(hs, key=lambda x: x.Pt(), reverse=True)
     zs = sorted(zs, key=lambda x: x.Pt(), reverse=True)
-    all_bs = sorted(all_bs, key=lambda x: x.Pt(), reverse=True)
-    all_ls = sorted(all_ls, key=lambda x: x.Pt(), reverse=True)
+    bs = sorted(bs, key=lambda x: x.Pt(), reverse=True)
+    ls = sorted(ls, key=lambda x: x.Pt(), reverse=True)
 
 
     if len(hs) > 0 and len(zs) > 0:
@@ -130,45 +130,15 @@ for entry in xrange(numberOfEntries):
         genH.push_back(hs[0])
         Z.clear()
         Z.push_back(zs[0])
-        #mytree.Fill()
 
-    bs = []
-    if len(all_bs) > 1:
-        idR = 999999
-        for x,y in itertools.combinations(all_bs,2):
-            delta = deltaRpT(x + y,hs[0])
-            if delta < idR:
-                idR = delta
-                b0 = x
-                b1 = y
-        bs.append(b0)
-        bs.append(b1)
-
-    ls = []
-    if len(all_ls) > 1:
-        idR = 999999
-        for x,y in itertools.combinations(all_ls,2):
-            delta = deltaRpT(x+y,zs[0])
-            if delta < idR:
-                idR = delta
-                l0 = x
-                l1 = y
-        ls.append(l0)
-        ls.append(l1)
-
-    #if len(ls) > 1 : 
-
-        # born level leptons
-        #Z.clear()
-        #Z.push_back(ls[0]+ls[1])
-        #z_dau.clear()
-        #z_dau.push_back(ls[0])
-        #z_dau.push_back(ls[1])
-
-    if len(bs) > 1 and len(jets) > 1:
+    if len(bs) > 1 and len(jets) > 1 and len(ls) > 1:
 
         # born level bs from h decay
         h = bs[0]+bs[1]
+
+        z_dau.clear()
+        z_dau.push_back(ls[0])
+        z_dau.push_back(ls[1])
 
         #match bs to jets:
         #leading jet

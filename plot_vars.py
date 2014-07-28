@@ -1,4 +1,5 @@
 import ROOT
+from tools.Ratio import getRatio
 
 path ='../data/'
 files = [ 'tree_ZH50', 'tree_ZH_inclusive', 'tree_ZH_MG_012j', 'tree_ZH_MG_0j','tree_ZH_powheg']
@@ -17,10 +18,28 @@ for var,range,var_name in zip(vars,ranges,var_names):
     opt = 'norm'
 
     c1 = ROOT.TCanvas("c1", "c1", 800, 600)
-    c1.SetLogy()
+
+    oben = ROOT.TPad('oben','oben',0,0.3 ,1.0,1.0)
+    oben.SetBottomMargin(0)
+    oben.SetFillStyle(4000)
+    oben.SetFrameFillStyle(1000)
+    oben.SetFrameFillColor(0)
+    unten = ROOT.TPad('unten','unten',0,0.0,1.0,0.3)
+    unten.SetTopMargin(0.)
+    unten.SetBottomMargin(0.35)
+    unten.SetFillStyle(4000)
+    unten.SetFrameFillStyle(1000)
+    unten.SetFrameFillColor(0)
+
+    oben.Draw()
+    unten.Draw()
+
+    oben.cd()
+
+    ROOT.gPad.SetLogy()
     ROOT.gPad.SetTicks(1,1)
 
-    l = ROOT.TLegend(0.55, 0.7,0.88,0.88)
+    l = ROOT.TLegend(0.59, 0.7,0.92,0.88)
     l.SetLineWidth(2)
     l.SetBorderSize(0)
     l.SetFillColor(0)
@@ -48,9 +67,29 @@ for var,range,var_name in zip(vars,ranges,var_names):
 
     histos[0].Draw('')
     histos[0].GetXaxis().SetTitle(var_name)
-    for histo in histos[1:]:
+
+    ratios = []
+
+    for histo in histos:
+        ratios.append(getRatio(histos[0],histo,histo.GetXaxis().GetXmin(),histo.GetXaxis().GetXmax(),"",10))
         histo.Draw('same')
     l.Draw()
+
+    unten.cd()
+
+    for j,ra in enumerate(ratios):
+        ratio, error = ra
+        ratio.SetStats(0)
+        ratio.SetLineColor(colors[j])
+        ratio.SetLineStyle(styles[j])
+        ratio.SetLineWidth(2)
+        ratio.GetXaxis().SetTitle(var_name)
+        ratio.GetXaxis().SetTitle('Ratio')
+        if j == 0:
+            ratio.Draw("hist")
+        else:
+            ratio.Draw("hist,same")
+
     f_name = var
     for char in '()[].':
         f_name = f_name.replace(char,'')
