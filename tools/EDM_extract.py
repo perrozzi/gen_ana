@@ -10,8 +10,8 @@ print 'loaded libraries'
 edm_file_name = sys.argv[1]
 out_file_name = sys.argv[2]
 
-edm_file = ROOT.TFile(edm_file_name)
 out_file = ROOT.TFile(out_file_name,'RECREATE')
+edm_file = ROOT.TFile(edm_file_name)
 
 out_file.cd()
 
@@ -24,8 +24,12 @@ ak5_size = array('i',[0])
 ak5_tree.Branch('ak5_size',ak5_size,'ak5_size/I')
 
 edm_particles_size = ROOT.TTreeFormula('isize','recoGenParticles_genParticles__GEN.@obj.size()',edm_tree)
+edm_particles_mother = ROOT.TTreeFormula('imother','recoGenParticles_genParticles__GEN.obj.mother(0)->pdgId()',edm_tree)
 particles_size = array('i',[0])
 particles_tree.Branch('particles_size',particles_size,'particles_size/I')
+
+particles_mother = array('i',[0]*10000)
+particles_tree.Branch('particles_mother',particles_mother,'particles_mother[particles_size]/I')
 
 vars = ['pt','eta','phi','mass','pdgId','status','qx3']
 types = ['f','f','f','f','i','i','i']
@@ -44,6 +48,8 @@ for var,type in zip(vars,types):
 n = edm_tree.GetEntries()
 #n=100
 
+edm_file.cd()
+
 for e in range(n):
     # print progress
     sys.stdout.write("progress: %d%%   \r" % (float(e)*100./(n)) )
@@ -54,6 +60,7 @@ for e in range(n):
     for var in vars:
         AK5Formulas[var].GetNdata()
         ParticlesFormulas[var].GetNdata()
+    edm_particles_mother.GetNdata()
     for i in range(ak5_size[0]):
         for var,type in zip(vars,types):
             if type == 'i':
@@ -66,10 +73,13 @@ for e in range(n):
                 ParticlesArrays[var][i] = int(ParticlesFormulas[var].EvalInstance(i))
             else:
                 ParticlesArrays[var][i] = ParticlesFormulas[var].EvalInstance(i)
+        particles_mother[i] = int(edm_particles_mother.EvalInstance(i))
     ak5_tree.Fill()
     particles_tree.Fill()
 
 print 'done!'
+
+out_file.cd()
 
 ak5_tree.AutoSave()
 particles_tree.AutoSave()
