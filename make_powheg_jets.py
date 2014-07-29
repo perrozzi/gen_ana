@@ -26,19 +26,17 @@ from spartyjet import *
 import sys
 #===============================================
 
-name = sys.argv[1]
-#outname = sys.argv[2]
-assert name != ''
-
-# StdHep
-input = getInputMaker("../data/input/%s.lhe.hep"%name)
-#input = getInputMaker('/shome/peller/Madgraph/MG5_aMC_v2_1_0/ZH/Events/run_05/events_HERWIG6_0.hep')
-#input = getInputMaker('/shome/peller/SpartyJet/spartyjet-4.0.2/data/ttbar_smallrun_pythia_events.hep')
-input.reject_bad_input(True)
-input.set_skip_empty_events(False)
+# Ntuple
+# (getInputMaker should usually get ROOT files right, but only if prefix starts with 'Input')
+ntupleInput = SJ.NtupleInputMaker(SJ.NtupleInputMaker.EtaPhiPtM_array_float)
+ntupleInput.set_prefix('')
+ntupleInput.set_n_name('size')
+ntupleInput.set_variables('eta', 'phi', 'pt', 'mass')
+ntupleInput.setFileTree('../data/sparty_input_powheg.root', 'mytree')
+input = ntupleInput
 
 # output ROOT file
-outfile = "../data/output/%s.root"%name
+outfile = "../data/output/Powheg.root"
 
 print "Now running on",input.name()
 

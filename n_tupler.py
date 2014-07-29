@@ -14,13 +14,18 @@ from tools.delta import *
 ROOT.gSystem.Load('/shome/peller/Madgraph/MG5_aMC_v2_1_0/ExRootAnalysis/lib/libExRootAnalysis.so')
 ROOT.gROOT.ProcessLine('.L VectorTLorentzVector_h.so')
 
-group = 'ZH50'
+
+group = sys.argv[1]
+#group = 'ZH50'
 #group = 'ZH'
 #group = 'ZH_inclusive'
 #group = 'ZH_MG_012j'
 #group = 'ZH_MG_0j'
 
-clone = False
+if 'MG' in group:
+    clone = True
+else:
+    clone = False
 
 collection = parse.samples('../data/samples_highstat.cfg')
 #collection = parse.samples('../data/samples.cfg')

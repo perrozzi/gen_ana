@@ -6,8 +6,8 @@ ROOT.gROOT.SetBatch(True)
 
 path ='../data/'
 files = [ 'tree_ZH50', 'tree_ZH_inclusive', 'tree_ZH_MG_012j', 'tree_ZH_MG_0j','tree_ZH_powheg']
-names = [ 'aMC@NLO 0-2j + Herwig', 'aMC@NLO + Herwig', 'Madgraph 0-2j + Pythia', 'Madgraph + Pythia', 'Powheg + Herwig']
-colors = [2,46,4,9,8]
+names = [ 'aMC@NLO FxFx(0-2j) + Herwig', 'aMC@NLO + Herwig', 'Madgraph MLM(0-2j) + Pythia', 'Madgraph + Pythia', 'Powheg + Herwig']
+colors = [98,98,9,9,8]
 styles = [1,2,1,2,1]
 
 outfile = ROOT.TFile('test.root')

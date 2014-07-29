@@ -50,10 +50,12 @@ weighted = False
 
 # parse filenames and open
 infilename = '../data/input/ZllHbb_Powheg.root'
+ak5filename = '../data/output/Powheg.root'
 infile = ROOT.TFile(infilename)
+ak5file = ROOT.TFile(ak5filename)
 
 particles= infile.Get('Particles')
-ak5 = infile.Get('AK5')
+ak5 = ak5file.Get('AK5')
 
 numberOfEntries = particles.GetEntries()
 #numberOfEntries = 1000
@@ -78,14 +80,14 @@ for entry in xrange(numberOfEntries):
     jets = [] # jets
 
     # make jet 4-vectors
-    for jet in xrange(ak5.ak5_size):
-        if ak5.pt[jet] > 20:
+    for jet in xrange(ak5.AK5_N):
+        if ak5.AK5_pt[jet] > 20.:
             jets.append(ROOT.TLorentzVector())
             jets[-1].SetPtEtaPhiM(
-                    ak5.pt[jet],
-                    ak5.eta[jet],
-                    ak5.phi[jet],
-                    ak5.mass[jet])
+                    ak5.AK5_pt[jet],
+                    ak5.AK5_eta[jet],
+                    ak5.AK5_phi[jet],
+                    ak5.AK5_mass[jet])
     jets = sorted(jets, key=lambda x: x.Pt(), reverse=True)
 
     hs = []
@@ -124,17 +126,14 @@ for entry in xrange(numberOfEntries):
     bs = sorted(bs, key=lambda x: x.Pt(), reverse=True)
     ls = sorted(ls, key=lambda x: x.Pt(), reverse=True)
 
-
-    if len(hs) > 0 and len(zs) > 0:
-        genH.clear()
-        genH.push_back(hs[0])
-        Z.clear()
-        Z.push_back(zs[0])
-
     if len(bs) > 1 and len(jets) > 1 and len(ls) > 1:
 
         # born level bs from h decay
         h = bs[0]+bs[1]
+        genH.clear()
+        genH.push_back(h)
+        Z.clear()
+        Z.push_back(zs[0])
 
         z_dau.clear()
         z_dau.push_back(ls[0])
@@ -150,8 +149,11 @@ for entry in xrange(numberOfEntries):
         dR1 = min(dRs)
         b1_jet = jets.pop(dRs.index(dR1))
 
-        dR[0] = deltaR(bs[0],b0_jet)
-        dR[1] = deltaR(bs[1],b1_jet)
+        dR[0] = dR0
+        dR[1] = dR1
+
+        #if dR0 > 0.05 or dR1 > 0.1:
+        #    continue
             
         # higgs candidate
         H.clear()
