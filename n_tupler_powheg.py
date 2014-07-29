@@ -57,6 +57,8 @@ ak5file = ROOT.TFile(ak5filename)
 particles= infile.Get('Particles')
 ak5 = ak5file.Get('AK5')
 
+assert particles.GetEntries() ==  ak5.GetEntries()
+
 numberOfEntries = particles.GetEntries()
 #numberOfEntries = 1000
 
@@ -71,7 +73,7 @@ for entry in xrange(numberOfEntries):
         pb.move()
 
     particles.GetEntry(entry+1)
-    ak5.GetEntry(entry+1)
+    ak5.GetEntry(entry)
 
     weight[0] = 1.
 
@@ -92,8 +94,6 @@ for entry in xrange(numberOfEntries):
 
     hs = []
     zs = []
-    bs = []
-    ls = []
 
     for p in xrange(particles.particles_size):
         # from hard interaction
