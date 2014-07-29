@@ -53,6 +53,6 @@ def getRatio(hist,reference,min,max,yTitle="",maxUncertainty = 1000.000,restrict
     theRatio.GetYaxis().CenterTitle(ROOT.kTRUE)
     theRatio.GetYaxis().SetDrawOption("M")
     theRatio.SetXTitle(yTitle)
-    theRatio.SetYTitle("Data/MC")
+    theRatio.SetYTitle("ratio")
     return theRatio, refError
     

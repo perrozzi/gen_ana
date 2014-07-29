@@ -1,21 +1,22 @@
+#!/usr/bin/env python
 import ROOT
 from tools.Ratio import getRatio
+import tools.parse as parse
+ROOT.gROOT.SetBatch(True)
 
 path ='../data/'
 files = [ 'tree_ZH50', 'tree_ZH_inclusive', 'tree_ZH_MG_012j', 'tree_ZH_MG_0j','tree_ZH_powheg']
 names = [ 'aMC@NLO 0-2j + Herwig', 'aMC@NLO + Herwig', 'Madgraph 0-2j + Pythia', 'Madgraph + Pythia', 'Powheg + Herwig']
-colors = [2,4,8,9,1]
-styles = [1,2,3,4,5]
+colors = [2,46,4,9,8]
+styles = [1,2,1,2,1]
 
 outfile = ROOT.TFile('test.root')
 
-vars = ['Z.M()','Z.Pt()','Z.Eta()','n_aJets','aJets[0].Pt()','aJets[0].Eta()','aJets[1].Pt()','aJets[1].Eta()','H.Pt()','H.M()','H.Eta()','genH.Pt()','genH.M()','genH.Eta()']
-ranges = ['(50,40,140)','(50,0,250)','(50,-5,5)','(10,0,10)','(50,0,250)','(50,-5,5)','(50,0,250)','(50,-5,5)','(50,0,250)','(50,75,175)','(50,-5,5)','(50,0,250)','(40,124.5,125.5)','(50,-5,5)']
-var_names = ['mass(Z) (GeV)','p_{T}(Z) (GeV)','Eta(Z)','#(additional jets)','p_{T}(leading jet) (GeV)','Eta(leading jet)','p_{T}(second jet) (GeV)','Eta(second jet)','P_{T}(H(jj)) (GeV)','mass(H(jj)) (GeV)','Eta(H(jj))','P_{T}(H) (GeV)','mass(H) (GeV)','Eta(H)']
+vars = parse.samples('vars.cfg')
 
-for var,range,var_name in zip(vars,ranges,var_names):
+for var in vars.samples:
 
-    opt = 'norm'
+    opt = 'norm,e'
 
     c1 = ROOT.TCanvas("c1", "c1", 800, 600)
 
@@ -36,7 +37,8 @@ for var,range,var_name in zip(vars,ranges,var_names):
 
     oben.cd()
 
-    ROOT.gPad.SetLogy()
+    if eval(var.log):
+        ROOT.gPad.SetLogy()
     ROOT.gPad.SetTicks(1,1)
 
     l = ROOT.TLegend(0.59, 0.7,0.92,0.88)
@@ -50,11 +52,11 @@ for var,range,var_name in zip(vars,ranges,var_names):
     histos = []
 
     for i,file in enumerate(files):
-        name = file.lstrip('tree_')
+        name = file.lstrip('tree_')+var.id
         _file = ROOT.TFile(path+file+'.root')
         outfile.cd()
         _tree = _file.Get('mytree')
-        _tree.Draw('%s>>%s%s'%(var,name,range),"weight",opt)
+        _tree.Draw('%s>>%s%s'%(var.var,name,var.range),"weight",opt)
         histos.append(ROOT.gDirectory.Get(name))
         histos[-1].SetTitle('')
         histos[-1].SetDirectory(0)
@@ -65,14 +67,20 @@ for var,range,var_name in zip(vars,ranges,var_names):
         histo.SetLineWidth(2)
         l.AddEntry(histo,names[i],'l')
 
-    histos[0].Draw('')
-    histos[0].GetXaxis().SetTitle(var_name)
+    scale = histos[0].GetMaximum()
+    if eval(var.log):
+        scale*=5.
+    else:
+        scale*=1.25
+    histos[0].SetMaximum(scale)
+    histos[0].Draw('hist')
+    histos[0].GetXaxis().SetTitle(var.XaxisTitle)
 
     ratios = []
 
     for histo in histos:
-        ratios.append(getRatio(histos[0],histo,histo.GetXaxis().GetXmin(),histo.GetXaxis().GetXmax(),"",10))
-        histo.Draw('same')
+        ratios.append(getRatio(histo,histos[0],histo.GetXaxis().GetXmin(),histo.GetXaxis().GetXmax(),"",0.05))
+        histo.Draw('hist,same')
     l.Draw()
 
     unten.cd()
@@ -83,15 +91,10 @@ for var,range,var_name in zip(vars,ranges,var_names):
         ratio.SetLineColor(colors[j])
         ratio.SetLineStyle(styles[j])
         ratio.SetLineWidth(2)
-        ratio.GetXaxis().SetTitle(var_name)
-        ratio.GetXaxis().SetTitle('Ratio')
+        ratio.GetXaxis().SetTitle(var.XaxisTitle)
         if j == 0:
             ratio.Draw("hist")
         else:
             ratio.Draw("hist,same")
 
-    f_name = var
-    for char in '()[].':
-        f_name = f_name.replace(char,'')
-    print f_name
-    c1.Print('var_plots/%s.pdf'%f_name)
+    c1.Print('var_plots/%s.pdf'%var.id)
