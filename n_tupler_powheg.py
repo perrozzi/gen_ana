@@ -85,11 +85,11 @@ for entry in xrange(numberOfEntries):
     for jet in xrange(ak5.AK5_N):
         if ak5.AK5_pt[jet] > 20.:
             jets.append(ROOT.TLorentzVector())
-            jets[-1].SetPtEtaPhiM(
+            jets[-1].SetPtEtaPhiE(
                     ak5.AK5_pt[jet],
                     ak5.AK5_eta[jet],
                     ak5.AK5_phi[jet],
-                    ak5.AK5_mass[jet])
+                    ak5.AK5_e[jet])
     jets = sorted(jets, key=lambda x: x.Pt(), reverse=True)
 
     hs = []

@@ -24,7 +24,7 @@ def renewHist(hist,reference,min,max):
         theReference.SetBinError(theReference.FindBin(weAreAt),reference.GetBinError(i))
     return theHist, theReference
 
-def getRatio(hist,reference,min,max,yTitle="",maxUncertainty = 1000.000,restrict=True):
+def getRatio(hist,reference,min,max,yTitle="",maxUncertainty = 100.,restrict=True):
     from ROOT import gROOT
     theHist, theReference = renewHist(hist,reference,min,max)
     ROOT.gSystem.Load('./tools/Ratio_C.so') 
@@ -36,8 +36,8 @@ def getRatio(hist,reference,min,max,yTitle="",maxUncertainty = 1000.000,restrict
     if restrict:
         #theRatio.SetMinimum(0.01)
         #theRatio.SetMaximum(2.49)
-        theRatio.SetMinimum(0.35)
-        theRatio.SetMaximum(1.8)
+        theRatio.SetMinimum(0.7)
+        theRatio.SetMaximum(1.3)
     else:
         theRatio.SetMinimum(int(theRatio.GetMinimum()))
         theRatio.SetMaximum(int(theRatio.GetMaximum()*1.5))

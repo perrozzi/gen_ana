@@ -30,9 +30,9 @@ import sys
 #======================================
 
 if len(sys.argv) < 2:
-  print 'Usage: ./guiExample.py filename [filename2 ...]'
+  print 'Usage: ./gui.py process'
 
-files = sys.argv[1:]
+files = ["../data/output/%s.root"%sys.argv[1]]
 
 # find trees
 trees = []

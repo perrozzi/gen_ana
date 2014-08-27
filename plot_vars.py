@@ -79,7 +79,7 @@ for var in vars.samples:
     ratios = []
 
     for histo in histos:
-        ratios.append(getRatio(histo,histos[0],histo.GetXaxis().GetXmin(),histo.GetXaxis().GetXmax(),"",0.05))
+        ratios.append(getRatio(histo,histos[0],histo.GetXaxis().GetXmin(),histo.GetXaxis().GetXmax(),"",0.03))
         histo.Draw('hist,same')
     l.Draw()
 
