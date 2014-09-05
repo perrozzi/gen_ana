@@ -1,3 +1,3 @@
 ### small Analyzer
 
-to analyze files in STDHEP and ExROOT format
+to analyze files in STDHEP, HEPEVT, HepMC and EDM format
