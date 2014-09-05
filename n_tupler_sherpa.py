@@ -13,7 +13,7 @@ from tools.delta import *
 
 ROOT.gROOT.ProcessLine('.L VectorTLorentzVector_h.so')
 
-group = 'ZH_powheg'
+group = 'ZH_sherpa'
 
 outfile = ROOT.TFile('../data/tree_%s.root'%group,'RECREATE')
 outfile.cd()
@@ -49,8 +49,8 @@ mytree.Branch('weight',weight,'weight/F')
 weighted = False
 
 # parse filenames and open
-infilename = '../data/input/ZllHbb_Powheg.root'
-ak5filename = '../data/output/Powheg.root'
+infilename = '../data/input/ZllHbb_Sherpa.root'
+ak5filename = '../data/output/Sherpa.root'
 infile = ROOT.TFile(infilename)
 ak5file = ROOT.TFile(ak5filename)
 
@@ -92,48 +92,60 @@ for entry in xrange(numberOfEntries):
                     ak5.AK5_e[jet])
     jets = sorted(jets, key=lambda x: x.Pt(), reverse=True)
 
-    hs = []
     zs = []
+
+    firstlp = False
+    firstlm = False
 
     for p in xrange(particles.particles_size):
         # from hard interaction
         status = particles.status[p]
         pdgId = particles.pdgId[p]
         mother = particles.particles_mother[p]
-        if (status == 3 and (pdgId == 23 or pdgId == 25)) or (mother == 25 and abs(pdgId) == 5) or (mother == 23 and (abs(pdgId) == 11 or abs(pdgId) ==13)):
+        if status < 3:
+            if pdgId == 11 and not firstlm:
+                particle = ROOT.TLorentzVector()
+                particle.SetPtEtaPhiM(
+                        particles.pt[p],
+                        particles.eta[p],
+                        particles.phi[p],
+                        particles.mass[p])
+                ls.append(particle)
+                firstlm = True
 
+            elif pdgId == -11 and not firstlp:
+                particle = ROOT.TLorentzVector()
+                particle.SetPtEtaPhiM(
+                        particles.pt[p],
+                        particles.eta[p],
+                        particles.phi[p],
+                        particles.mass[p])
+                ls.append(particle)
+                firstlp = True
+
+
+        elif status == 11 and  mother == 25 and abs(pdgId) == 5:
             particle = ROOT.TLorentzVector()
             particle.SetPtEtaPhiM(
                     particles.pt[p],
                     particles.eta[p],
                     particles.phi[p],
                     particles.mass[p])
-
-            if status == 3:
-                if pdgId == 23:
-                    zs.append(particle)
-                elif pdgId == 25:
-                    hs.append(particle)
-            elif abs(pdgId) == 5:
-                bs.append(particle)
-
-            else:
-                ls.append(particle)
+            bs.append(particle)
 
 
-    hs = sorted(hs, key=lambda x: x.Pt(), reverse=True)
-    zs = sorted(zs, key=lambda x: x.Pt(), reverse=True)
     bs = sorted(bs, key=lambda x: x.Pt(), reverse=True)
     ls = sorted(ls, key=lambda x: x.Pt(), reverse=True)
 
     if len(bs) > 1 and len(jets) > 1 and len(ls) > 1:
 
         # born level bs from h decay
-        h = bs[0]+bs[1]
+        h = bs[0] + bs[1]
+        z = ls[0] + ls[1]
         genH.clear()
         genH.push_back(h)
         Z.clear()
-        Z.push_back(zs[0])
+        Z.push_back(z)
 
         z_dau.clear()
         z_dau.push_back(ls[0])
@@ -171,8 +183,8 @@ for entry in xrange(numberOfEntries):
         #mytree.Print()
         mytree.Fill()
     else:
-        print 'event skipped'
-        print len(bs), len(ls), len(jets)
+        #print 'event skipped'
+        #print len(bs), len(ls), len(jets)
         continue
 
 

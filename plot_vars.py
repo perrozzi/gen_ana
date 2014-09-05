@@ -5,10 +5,10 @@ import tools.parse as parse
 ROOT.gROOT.SetBatch(True)
 
 path ='../data/'
-files = [ 'tree_ZH50', 'tree_ZH_inclusive', 'tree_ZH_MG_012j', 'tree_ZH_MG_0j','tree_ZH_powheg']
-names = [ 'aMC@NLO FxFx(0-2j) + Herwig', 'aMC@NLO + Herwig', 'Madgraph MLM(0-2j) + Pythia', 'Madgraph + Pythia', 'Powheg + Herwig']
-colors = [98,98,9,9,8]
-styles = [1,2,1,2,1]
+files = [ 'tree_ZH50', 'tree_ZH_inclusive', 'tree_ZH_MG_012j', 'tree_ZH_MG_0j','tree_ZH_powheg','tree_ZH_sherpa']
+names = [ 'aMC@NLO FxFx(0-2j) + Herwig', 'aMC@NLO + Herwig', 'Madgraph MLM(0-2j) + Pythia', 'Madgraph + Pythia', 'Powheg + Herwig','Sherpa']
+colors = [98,98,9,9,8,15]
+styles = [1,2,1,2,1,1]
 
 outfile = ROOT.TFile('test.root')
 

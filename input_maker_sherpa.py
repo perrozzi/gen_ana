@@ -8,7 +8,8 @@ warnings.filterwarnings( action='ignore', category=RuntimeWarning, message='.*TC
 import array
 
 
-outfile = ROOT.TFile('../data/sparty_input_powheg.root','RECREATE')
+#outfile = ROOT.TFile('../data/sparty_input_powheg.root','RECREATE')
+outfile = ROOT.TFile('../data/sparty_input_sherpa.root','RECREATE')
 outfile.cd()
 
 mytree = ROOT.TTree('mytree','mytree')
@@ -30,7 +31,8 @@ mytree.Branch('pdgId',pdgId,'pdgId[size]/F')
 
 
 # parse filenames and open
-infilename = '../data/input/ZllHbb_Powheg.root'
+#infilename = '../data/input/ZllHbb_Powheg.root'
+infilename = '../data/input/ZllHbb_Sherpa.root'
 infile = ROOT.TFile(infilename)
 
 particles= infile.Get('Particles')
@@ -61,7 +63,12 @@ for entry in xrange(numberOfEntries):
             continue
         pdg = particles.pdgId[p]
         mother = particles.particles_mother[p]
-        if (mother == 23 and (abs(pdg) == 11 or abs(pdg) ==13)):
+        #if (mother == 23 and (abs(pdg) == 11 or abs(pdg) ==13)):
+        if pdg == 11 and not firstlm:
+            firstlm = True
+            continue
+        if pdg == -11 and not firstlp:
+            firstlp = True
             continue
         pt[n] = particles.pt[p]
         eta[n] = particles.eta[p]
