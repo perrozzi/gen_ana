@@ -27,6 +27,8 @@ genH = ROOT.std.vector(ROOT.TLorentzVector)()
 mytree.Branch( "genH", "vector<TLorentzVector>", genH)
 h_dau =ROOT.std.vector(ROOT.TLorentzVector)()
 mytree.Branch( "h_dau", "vector<TLorentzVector>", h_dau)
+genh_dau =ROOT.std.vector(ROOT.TLorentzVector)()
+mytree.Branch( "genh_dau", "vector<TLorentzVector>", genh_dau)
 dR = array.array('f',[0]*2)
 mytree.Branch('dR', dR, 'dR[2]/F')
 
@@ -161,6 +163,9 @@ for entry in xrange(numberOfEntries):
         h_dau.clear()
         h_dau.push_back(b0_jet)
         h_dau.push_back(b1_jet)
+        genh_dau.clear()
+        genh_dau.push_back(bs[0])
+        genh_dau.push_back(bs[1])
 
         aJets.clear()
         n_aJets[0] = len(jets)
