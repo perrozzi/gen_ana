@@ -61,7 +61,13 @@ for entry in xrange(numberOfEntries):
             continue
         pdg = particles.pdgId[p]
         mother = particles.particles_mother[p]
-        if (mother == 23 and (abs(pdg) == 11 or abs(pdg) ==13)):
+        #if (mother == 23 and (abs(pdg) == 11 or abs(pdg) ==13)):
+        #    continue
+        if (pdg == 11 or pdg == 13) and not firstlm:
+            firstlm = True
+            continue
+        if (pdg == -11 or pdg == -13) and not firstlp:
+            firstlp = True
             continue
         pt[n] = particles.pt[p]
         eta[n] = particles.eta[p]

@@ -6,7 +6,7 @@ ROOT.gROOT.SetBatch(True)
 
 path ='../data/'
 files = [ 'tree_ZH50', 'tree_ZH_inclusive', 'tree_ZH_MG_012j', 'tree_ZH_MG_0j','tree_ZH_powheg','tree_ZH_sherpa']
-names = [ 'aMC@NLO FxFx(0-2j) + Herwig', 'aMC@NLO + Herwig', 'Madgraph MLM(0-2j) + Pythia', 'Madgraph + Pythia', 'Powheg + Herwig','Sherpa']
+names = [ 'aMC@NLO FxFx(0-2j) + Herwig', 'aMC@NLO + Herwig', 'Madgraph MLM(0-2j) + Pythia', 'Madgraph + Pythia', 'Powheg + Herwig','Sherpa (AMEGIC+OpenLoops)']
 colors = [98,98,9,9,8,15]
 styles = [1,2,1,2,1,1]
 
@@ -17,6 +17,8 @@ vars = parse.samples('vars.cfg')
 for var in vars.samples:
 
     opt = 'norm,e'
+    cut = 'dR[0] < 0.2 && dR[1] < 0.3'
+    #"abs(aJets[1].Eta())<2.5 && abs(aJets[2].Eta())<2.5 && abs(aJets[3].Eta())<2.5"
 
     c1 = ROOT.TCanvas("c1", "c1", 800, 600)
 
@@ -41,7 +43,7 @@ for var in vars.samples:
         ROOT.gPad.SetLogy()
     ROOT.gPad.SetTicks(1,1)
 
-    l = ROOT.TLegend(0.59, 0.7,0.92,0.88)
+    l = ROOT.TLegend(0.59, 0.67,0.92,0.88)
     l.SetLineWidth(2)
     l.SetBorderSize(0)
     l.SetFillColor(0)
@@ -51,12 +53,13 @@ for var in vars.samples:
 
     histos = []
 
+
     for i,file in enumerate(files):
         name = file.lstrip('tree_')+var.id
         _file = ROOT.TFile(path+file+'.root')
         outfile.cd()
         _tree = _file.Get('mytree')
-        _tree.Draw('%s>>%s%s'%(var.var,name,var.range),"weight",opt)
+        _tree.Draw('%s>>%s%s'%(var.var,name,var.range),"weight*(%s)"%cut,opt)
         histos.append(ROOT.gDirectory.Get(name))
         histos[-1].SetTitle('')
         histos[-1].SetDirectory(0)

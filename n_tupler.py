@@ -124,13 +124,13 @@ for sample in samples:
 
         # make jet 4-vectors
         for jet in xrange(AK5_N):
-            if fastjet.AK5_pt[jet] > 20.:
-                jets.append(ROOT.TLorentzVector())
-                jets[-1].SetPtEtaPhiE(
-                        fastjet.AK5_pt[jet],
-                        fastjet.AK5_eta[jet],
-                        fastjet.AK5_phi[jet],
-                        fastjet.AK5_e[jet])
+            #if fastjet.AK5_pt[jet] > 20.:
+            jets.append(ROOT.TLorentzVector())
+            jets[-1].SetPtEtaPhiE(
+                    fastjet.AK5_pt[jet],
+                    fastjet.AK5_eta[jet],
+                    fastjet.AK5_phi[jet],
+                    fastjet.AK5_e[jet])
         jets = sorted(jets, key=lambda x: x.Pt(), reverse=True)
 
         for particle in particles:
