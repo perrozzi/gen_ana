@@ -32,12 +32,12 @@ ntupleInput = SJ.NtupleInputMaker(SJ.NtupleInputMaker.EtaPhiPtM_array_float)
 ntupleInput.set_prefix('')
 ntupleInput.set_n_name('size')
 ntupleInput.set_variables('eta', 'phi', 'pt', 'mass')
-ntupleInput.setFileTree('../data/sparty_input_powheg.root', 'mytree')
+ntupleInput.setFileTree('../data/sparty_input_powheg_PU.root', 'mytree')
 #ntupleInput.setFileTree('../data/sparty_input_sherpa.root', 'mytree')
 input = ntupleInput
 
 # output ROOT file
-outfile = "../data/output/Powheg.root"
+outfile = "../data/output/Powheg_PU.root"
 #outfile = "../data/output/Sherpa.root"
 
 print "Now running on",input.name()

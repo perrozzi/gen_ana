@@ -8,7 +8,7 @@ warnings.filterwarnings( action='ignore', category=RuntimeWarning, message='.*TC
 import array
 
 
-outfile = ROOT.TFile('../data/sparty_input_powheg.root','RECREATE')
+outfile = ROOT.TFile('../data/sparty_input_powheg_PU.root','RECREATE')
 outfile.cd()
 
 mytree = ROOT.TTree('mytree','mytree')
@@ -30,7 +30,8 @@ mytree.Branch('pdgId',pdgId,'pdgId[size]/F')
 
 
 # parse filenames and open
-infilename = '../data/input/ZllHbb_Powheg.root'
+infilename = '../data/input/ZllHbb_Powheg_PU.root'
+#infilename = '../data/input/ZllHbb_Powheg.root'
 infile = ROOT.TFile(infilename)
 
 particles= infile.Get('Particles')
