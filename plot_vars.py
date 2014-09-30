@@ -17,7 +17,8 @@ parser.add_option("-C", "--conf", dest="conf", default="vars.cfg",
 (opts, args) = parser.parse_args(argv)
 
 path ='../data/'
-files = [ 'tree_ZH50', 'tree_ZH_inclusive', 'tree_ZH_MG_012j', 'tree_ZH_MG_0j','tree_ZH_powheg','tree_ZH_sherpa']
+#files = [ 'tree_ZH50', 'tree_ZH_inclusive', 'tree_ZH_MG_012j', 'tree_ZH_MG_0j','tree_ZH_powheg','tree_ZH_sherpa']
+files = [ 'tree_ZH50', 'tree_ZH_inclusive', 'tree_ZH_MG_012j', 'tree_ZH_MG_0j','tree_ZH_powheg_PU','tree_ZH_sherpa']
 names = [ 'aMC@NLO FxFx(0-2j) + Herwig', 'aMC@NLO + Herwig', 'Madgraph MLM(0-2j) + Pythia', 'Madgraph + Pythia', 'Powheg + Herwig','Sherpa (AMEGIC+OpenLoops)']
 colors = [98,98,9,9,8,15]
 styles = [1,2,1,2,1,1]
@@ -27,9 +28,11 @@ norm = [
         0.0497891290506,
         0.0140102168962,
         0.022549493317,
-        33292.0,
+        19531.0,
         99414.0
         ]
+# Powheg PU: 19531.0
+# Powheg:    33292.0
 
 outfile = ROOT.TFile('test.root')
 
@@ -115,7 +118,7 @@ for var in vars.samples:
 
     else:
         opt = 'e'
-        #cut = '1'
+        cut = '1'
         cut = 'Z.Pt() > 100. && Z.M() > 76. && Z.M() < 106. &&  h_dau[0].Pt() > 20. &&  h_dau[1].Pt() > 20.  && z_dau[0].Pt() > 20. && z_dau[1].Pt() > 20. && dR[0] < 0.3 && dR[1] < 0.3 && abs(h_dau[0].Eta()) < 2.5 && abs(h_dau[1].Eta()) < 2.5 && abs(z_dau[0].Eta()) < 2.5 && abs(z_dau[1].Eta()) < 2.5'
         #cut = 'dR[0] < 0.2 && dR[1] < 0.3'
         #"abs(aJets[1].Eta())<2.5 && abs(aJets[2].Eta())<2.5 && abs(aJets[3].Eta())<2.5"

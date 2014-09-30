@@ -15,7 +15,7 @@ ROOT.gROOT.ProcessLine('.L VectorTLorentzVector_h.so')
 
 group = 'ZH_powheg'
 
-outfile = ROOT.TFile('../data/tree_%s.root'%group,'RECREATE')
+outfile = ROOT.TFile('../data/tree_%s_PU.root'%group,'RECREATE')
 outfile.cd()
 
 mytree = ROOT.TTree('mytree','mytree')
@@ -51,8 +51,8 @@ mytree.Branch('weight',weight,'weight/F')
 weighted = False
 
 # parse filenames and open
-infilename = '../data/input/ZllHbb_Powheg.root'
-ak5filename = '../data/output/Powheg.root'
+infilename = '../data/input/ZllHbb_Powheg_PU.root'
+ak5filename = '../data/output/Powheg_PU.root'
 infile = ROOT.TFile(infilename)
 ak5file = ROOT.TFile(ak5filename)
 
