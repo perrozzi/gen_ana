@@ -2,3 +2,4 @@
 *.pdf
 *.root
 *.DS_Store
+*.so
