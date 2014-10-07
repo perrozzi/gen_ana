@@ -15,7 +15,7 @@ LogY=1
 # END PLOT
 
 # BEGIN PLOT /MC_ZHBB/Z_pT
-Title=Z p_{T}
+Title=Z $p_{T}$
 XLabel=$p_{T}(Z)$ (GeV)
 YLabel=$\text{d}\sigma/\text{d}p_{T}(Z)$ (pb/GeV)
 LogY=1
@@ -30,9 +30,41 @@ LogY=0
 # END PLOT
 
 # BEGIN PLOT /MC_ZHBB/dijet_pT
-Title=di-jet p_{T}
+Title=di-jet $p_{T}$
 XLabel=$p_{T}(jj)$ (GeV)
 YLabel=$\text{d}\sigma/\text{d}p_{T}(jj)$ (pb/GeV)
+LogY=1
+LogX=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/aJet_pT0
+Title=leading jet $p_{T}$
+XLabel=$p_{T}(jet0)$ (GeV)
+YLabel=$\text{d}\sigma/\text{d}p_{T}(jet0)$ (pb/GeV)
+LogY=1
+LogX=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/aJet_pT1
+Title=second jet $p_{T}$
+XLabel=$p_{T}(jet1)$ (GeV)
+YLabel=$\text{d}\sigma/\text{d}p_{T}(jet1)$ (pb/GeV)
+LogY=1
+LogX=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/aJet_pT2
+Title=third jet $p_{T}$
+XLabel=$p_{T}(jet2)$ (GeV)
+YLabel=$\text{d}\sigma/\text{d}p_{T}(jet2)$ (pb/GeV)
+LogY=1
+LogX=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/aJet_pT3
+Title=fourth jet $p_{T}$
+XLabel=$p_{T}(jet3)$ (GeV)
+YLabel=$\text{d}\sigma/\text{d}p_{T}(jet3)$ (pb/GeV)
 LogY=1
 LogX=1
 # END PLOT

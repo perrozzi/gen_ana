@@ -47,11 +47,14 @@ namespace Rivet {
 
         // ---- HISTOS ----
 
-        // differential jet rates
+        // jets
         for (size_t i=0; i < njets; ++i) {
-            const string dname = "log10_d_" +to_str(i) + to_str(i+1);
+            string dname = "log10_d_" +to_str(i) + to_str(i+1);
             _h_log10_d.push_back(bookHisto1D(dname, 100, 0.2, 4));
+            dname = "aJet_pT" +to_str(i);
+            _h_ajets_pT.push_back(bookHisto1D(dname,logspace(100,5,300)));
         }
+
 
         // Z properties
         _h_Z_mass = bookHisto1D("Z_mass",80,51,131);
@@ -110,12 +113,15 @@ namespace Rivet {
         for (size_t i = 0; i < bjets.size(); ++i) {
             // for now identify the first two b-jets as higgs
             if (i == idx0) h0 = bjets[i];
-            else if (i == idx1) h1 = bjets[i];
-            else ajets.push_back(bjets[i]);
+            if (i == idx1) h1 = bjets[i];
+            if (i != idx0 && i != idx1) ajets.push_back(bjets[i]);
             }
 
         // final highest pt dijet pair
         dijet = h0.momentum() + h1.momentum();
+
+        // sort additional jets
+        //ajets = ajets.jetsByPt(jets_pt_cut)
 
         // fill histos
         _h_Z_mass->fill(zll[0].mass(),weight);
@@ -135,6 +141,9 @@ namespace Rivet {
 
                 // Fill differential jet resolution
                 _h_log10_d[i]->fill(d_ij, weight);
+
+                //fill aJet pT histos
+                _h_ajets_pT[i]->fill(ajets[i].pT(),weight);
             }
         }
 
@@ -147,6 +156,7 @@ namespace Rivet {
         /// @todo Normalise, scale and otherwise manipulate histograms here
         for (size_t i = 0; i < njets; ++i) {
             scale(_h_log10_d[i], crossSection()/sumOfWeights());
+            scale(_h_ajets_pT[i], crossSection()/sumOfWeights());
         }
         scale(_h_Z_mass, crossSection()/sumOfWeights());
         scale(_h_dijet_mass, crossSection()/sumOfWeights());
@@ -175,6 +185,7 @@ namespace Rivet {
     //Profile1DPtr _h_XXXX;
     //Histo1DPtr _h_deta_jets, _h_dphi_jets, _h_dR_jets;
     std::vector<Histo1DPtr> _h_log10_d;
+    std::vector<Histo1DPtr> _h_ajets_pT;
     Histo1DPtr _h_Z_mass, _h_Z_pT, _h_dijet_pT, _h_dijet_mass;
     //@}
 
