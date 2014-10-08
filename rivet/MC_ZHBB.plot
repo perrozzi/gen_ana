@@ -7,20 +7,28 @@
 
 # ... add more histograms as you need them ...
 #
+#
+# BEGIN PLOT /MC_ZHBB/*
+XTwosidedTicks=1
+YTwosidedTicks=1
+ErrorBands=1
+ErrorBars=1
+# END PLOT
+
 # BEGIN PLOT /MC_ZHBB/Z_mass
 Title=mass of Z-Bososn
 XLabel=$M_Z$ (GeV)
 YLabel=$\text{d}\sigma/\text{d}M_Z$ (pb/GeV)
 LogY=1
 # END PLOT
-#
+
 # BEGIN PLOT /MC_ZHBB/Z_eta
 Title=psudorapidity of Z-Bososn
-XLabel=$\eta(Z)$ (GeV)
+XLabel=$\eta(Z)$
 YLabel=$\text{d}\sigma/\text{d}\eta(Z)$ (pb)
 LogY=1
 # END PLOT
-
+#
 # BEGIN PLOT /MC_ZHBB/Z_pT
 Title=transverse momentum of Z-Bososn
 XLabel=$p_{T}(Z)$ (GeV)
@@ -29,11 +37,33 @@ LogY=1
 LogX=1
 # END PLOT
 
+# BEGIN PLOT /MC_ZHBB/HZ_pT
+Title=transverse momentum of H-Z system
+XLabel=$p_{T}(Z)$ (GeV)
+YLabel=$\text{d}\sigma/\text{d}p_{T}(Z)$ (pb/GeV)
+LogY=1
+LogX=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/HZ_eta
+Title=psudorapidity of H-Z system
+XLabel=$\eta(HZ)$
+YLabel=$\text{d}\sigma/\text{d}\eta(HZ)$ (pb)
+LogY=1
+# END PLOT
+
 # BEGIN PLOT /MC_ZHBB/dijet_mass
 Title=mass of di-jet
 XLabel=$M_{jj}$ (GeV)
 YLabel=$\text{d}\sigma/\text{d}M_{jj}$ (pb/GeV)
 LogY=0
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/dijet_eta
+Title=psudorapidity of di-jet
+XLabel=$\eta(jj)$
+YLabel=$\text{d}\sigma/\text{d}\eta(jj)$ (pb)
+LogY=1
 # END PLOT
 
 # BEGIN PLOT /MC_ZHBB/dijet_pT
@@ -58,6 +88,62 @@ XLabel=$p_{T}(h_1)$ (GeV)
 YLabel=$\text{d}\sigma/\text{d}p_{T}(h_1)$ (pb/GeV)
 LogY=1
 LogX=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/h_dau_eta0
+Title=psudorapidity of leading higgs jet
+XLabel=$\eta(h_0)$
+YLabel=$\text{d}\sigma/\text{d}\eta(h_0)$ (pb)
+LogY=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/dR_jj
+Title=distance between the two higgs jets
+XLabel=$\Delta_{R}(h_0,h_1)$
+YLabel=$\text{d}\sigma/\text{d}\Delta_{R}(h_0,h_1)$ (pb)
+LogY=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/deta_jj
+Title=distance in $\eta$ between the two higgs jets
+XLabel=$\Delta_{\eta}(h_0,h_1)$
+YLabel=$\text{d}\sigma/\text{d}\Delta_{\eta}(h_0,h_1)$ (pb)
+LogY=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/dphi_jj
+Title=distance in $\phi$ between the two higgs jets
+XLabel=$\Delta_{\phi}(h_0,h_1)$
+YLabel=$\text{d}\sigma/\text{d}\Delta_{\phi}(h_0,h_1)$ (pb)
+LogY=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/dR_HZ
+Title=distance between di-jet and Z
+XLabel=$\Delta_{R}(H,Z)$
+YLabel=$\text{d}\sigma/\text{d}\Delta_{R}(H,Z)$ (pb)
+LogY=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/deta_HZ
+Title=distance in $\eta$ between di-jet and Z
+XLabel=$\Delta_{\eta}(Z,Z)$
+YLabel=$\text{d}\sigma/\text{d}\Delta_{\eta}(H,Z)$ (pb)
+LogY=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/dphi_HZ
+Title=distance in $\phi$ between di-jet and Z
+XLabel=$\Delta_{\phi}(h,Z)$
+YLabel=$\text{d}\sigma/\text{d}\Delta_{\phi}(H,Z)$ (pb)
+LogY=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/h_dau_eta1
+Title=psudorapidity of second higgs jet
+XLabel=$\eta(h_1)$ (GeV)
+YLabel=$\text{d}\sigma/\text{d}\eta(h_1)$ (pb)
+LogY=1
 # END PLOT
 
 # BEGIN PLOT /MC_ZHBB/aJet_pT0
@@ -90,6 +176,48 @@ XLabel=$p_{T}(jet_3)$ (GeV)
 YLabel=$\text{d}\sigma/\text{d}p_{T}(jet3)$ (pb/GeV)
 LogY=1
 LogX=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/aJet_eta0
+Title=psudorapidity of leading jet
+XLabel=$\eta(jet_0)$
+YLabel=$\text{d}\sigma/\text{d}\eta(jet_0)$ (pb)
+LogY=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/aJet_eta1
+Title=psudorapidity of second jet
+XLabel=$\eta(jet_1)$
+YLabel=$\text{d}\sigma/\text{d}\eta(jet_1)$ (pb)
+LogY=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/aJet_eta2
+Title=psudorapidity of third jet
+XLabel=$\eta(jet_2)$
+YLabel=$\text{d}\sigma/\text{d}\eta(jet_2)$ (pb)
+LogY=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/aJet_eta3
+Title=psudorapidity of fourth jet
+XLabel=$\eta(jet_3)$
+YLabel=$\text{d}\sigma/\text{d}\eta(jet_3)$ (pb)
+LogY=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/najets
+Title=number of additional jets
+XLabel=$N_{aJets}$
+YLabel=$\text{d}\sigma/\text{d}N_{aJets}$ (pb)
+LogY=1
+# END PLOT
+
+# BEGIN PLOT /MC_ZHBB/nbjets
+Title=number of b-jets
+XLabel=$N_{bJets}$
+YLabel=$\text{d}\sigma/\text{d}N_{bJets}$ (pb)
+LogY=1
 # END PLOT
 
 # BEGIN PLOT /MC_ZHBB/log10_d_01

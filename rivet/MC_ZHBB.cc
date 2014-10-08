@@ -58,6 +58,8 @@ namespace Rivet {
             _h_log10_d.push_back(bookHisto1D(dname, nbins, 0.2, 4));
             dname = "aJet_pT" +to_str(i);
             _h_ajets_pT.push_back(bookHisto1D(dname,logspace(nbins,5,300)));
+            dname = "aJet_eta" +to_str(i);
+            _h_ajets_eta.push_back(bookHisto1D(dname,nbins,-5,5));
         }
 
         // Z properties
@@ -70,15 +72,31 @@ namespace Rivet {
         _h_dijet_eta = bookHisto1D("dijet_eta",nbins,-5,5);
         _h_dijet_pT = bookHisto1D("dijet_pT",logspace(nbins,5,300));
 
+        // H+Z properties
+        _h_HZ_eta = bookHisto1D("HZ_eta",nbins,-5,5);
+        _h_HZ_pT = bookHisto1D("HZ_pT",logspace(nbins,5,300));
+
         // higgs jets
         for (size_t i=0; i < 2; ++i) {
-            string dname = "h_dau_mass" + to_str(i);
-            _h_dau_mass.push_back(bookHisto1D(dname,nbins,0,160));
-            dname = "h_dau_eta" + to_str(i);
+            string dname = "h_dau_eta" + to_str(i);
             _h_dau_eta.push_back(bookHisto1D(dname,nbins,-5,5));
             dname = "h_dau_pT" + to_str(i);
             _h_dau_pT.push_back(bookHisto1D(dname,logspace(nbins,5,300)));
         }
+
+        // angles
+        _h_dR_jj = bookHisto1D("dR_jj",nbins,0,5);
+        _h_dphi_jj = bookHisto1D("dphi_jj",nbins,0,3.2);
+        _h_deta_jj = bookHisto1D("deta_jj", nbins,0,5);
+
+        _h_dR_HZ = bookHisto1D("dR_HZ",nbins,0,5);
+        _h_dphi_HZ = bookHisto1D("dphi_HZ",nbins,0,3.2);
+        _h_deta_HZ = bookHisto1D("deta_HZ", nbins,0,5);
+        
+        // nJets
+        _h_najets = bookHisto1D("najets",10,0,10);
+        _h_nbjets = bookHisto1D("nbjets",10,0,10);
+
 
     }
 
@@ -86,7 +104,7 @@ namespace Rivet {
     void analyze(const Event& event) {
         const double weight = event.weight();
 
-        double jets_pt_cut = 5.0*GeV;
+        double jets_pt_cut = 20.0*GeV;
 
         // apply the projections
         const ZFinder& zeefinder = applyProjection<ZFinder>(event, "zeefinder");
@@ -101,13 +119,18 @@ namespace Rivet {
         Jets ajets;
         ajets.clear();
         Jet h0, h1; 
-        FourMomentum  dijet;
+        FourMomentum  dijet,Z, HZ;
         std::vector<size_t> b_indices;
+        int na = 0.0;
+        int nb = 0.0;
 
         // find all jets with bs
         for (size_t i = 0; i < alljets.size(); ++i) {
-            if (alljets[i].containsBottom())  b_indices.push_back(i);
+            if (alljets[i].containsBottom()) {
+                b_indices.push_back(i);
+                if (alljets[i].pT() > jets_pt_cut) nb++;
             }
+        }
 
         // require at least to b jets
         if (b_indices.size() < 2) vetoEvent;
@@ -133,26 +156,46 @@ namespace Rivet {
         // final highest pt dijet pair
         dijet = h0.momentum() + h1.momentum();
         
+        Z = zll[0].momentum();
+
+        // HZ system
+        HZ = dijet + Z;
+        
         // add everything else to the ajets 
         for (size_t i = 0; i < alljets.size(); ++i) {
-            if (i != idx0 && i != idx1) ajets.push_back(alljets[i]);
+            if (i != idx0 && i != idx1){
+                ajets.push_back(alljets[i]);
+                if (alljets[i].pT() > jets_pt_cut) na++;
             }
+        }
 
         // fill histos
-        _h_dau_mass[0]->fill(h0.mass(),weight);
-        _h_dau_mass[1]->fill(h1.mass(),weight);
         _h_dau_eta[0]->fill(h0.eta(),weight);
         _h_dau_eta[1]->fill(h1.eta(),weight);
         _h_dau_pT[0]->fill(h0.pT(),weight);
         _h_dau_pT[1]->fill(h1.pT(),weight);
 
-        _h_Z_mass->fill(zll[0].mass(),weight);
-        _h_Z_eta->fill(zll[0].eta(),weight);
-        _h_Z_pT->fill(zll[0].pT(),weight);
+        _h_Z_mass->fill(Z.mass(),weight);
+        _h_Z_eta->fill(Z.eta(),weight);
+        _h_Z_pT->fill(Z.pT(),weight);
 
         _h_dijet_mass->fill(dijet.mass(),weight);
         _h_dijet_eta->fill(dijet.eta(),weight);
         _h_dijet_pT->fill(dijet.pT(),weight);
+
+        _h_HZ_eta->fill(HZ.eta(),weight);
+        _h_HZ_pT->fill(HZ.pT(),weight);
+
+        _h_najets->fill(na,weight);
+        _h_nbjets->fill(nb,weight);
+
+        _h_dR_jj->fill(deltaR(h0,h1),weight);
+        _h_deta_jj->fill(deltaEta(h0,h1),weight);
+        _h_dphi_jj->fill(deltaPhi(h0,h1),weight);
+
+        _h_dR_HZ->fill(deltaR(dijet,Z),weight);
+        _h_deta_HZ->fill(deltaEta(dijet,Z),weight);
+        _h_dphi_HZ->fill(deltaPhi(dijet,Z),weight);
 
         // Jet resolutions and integrated jet rates
         double d_ij;
@@ -167,6 +210,7 @@ namespace Rivet {
 
                 //fill aJet pT histos
                 _h_ajets_pT[i]->fill(ajets[i].pT(),weight);
+                _h_ajets_eta[i]->fill(ajets[i].eta(),weight);
             }
         }
     }
@@ -175,14 +219,13 @@ namespace Rivet {
     /// Normalise histograms etc., after the run
     void finalize() {
 
-        /// @todo Normalise, scale and otherwise manipulate histograms here
         for (size_t i = 0; i < njets; ++i) {
             scale(_h_log10_d[i], crossSection()/sumOfWeights());
             scale(_h_ajets_pT[i], crossSection()/sumOfWeights());
+            scale(_h_ajets_eta[i], crossSection()/sumOfWeights());
         }
 
         for (size_t i = 0; i < 2; ++i) {
-            scale(_h_dau_mass[i], crossSection()/sumOfWeights());
             scale(_h_dau_eta[i], crossSection()/sumOfWeights());
             scale(_h_dau_pT[i], crossSection()/sumOfWeights());
         }
@@ -193,10 +236,19 @@ namespace Rivet {
         scale(_h_dijet_mass, crossSection()/sumOfWeights());
         scale(_h_dijet_eta, crossSection()/sumOfWeights());
         scale(_h_dijet_pT, crossSection()/sumOfWeights());
+        scale(_h_HZ_pT, crossSection()/sumOfWeights());
+        scale(_h_HZ_eta, crossSection()/sumOfWeights());
 
-        // scale(_h_YYYY, crossSection()/sumOfWeights()); // norm to cross section
-        // normalize(_h_YYYY); // normalize to unity
+        scale(_h_dR_jj, crossSection()/sumOfWeights());
+        scale(_h_deta_jj, crossSection()/sumOfWeights());
+        scale(_h_dphi_jj, crossSection()/sumOfWeights());
 
+        scale(_h_dR_HZ, crossSection()/sumOfWeights());
+        scale(_h_deta_HZ, crossSection()/sumOfWeights());
+        scale(_h_dphi_HZ, crossSection()/sumOfWeights());
+
+        scale(_h_najets, crossSection()/sumOfWeights());
+        scale(_h_nbjets, crossSection()/sumOfWeights());
     }
 
   private:
@@ -204,10 +256,14 @@ namespace Rivet {
     size_t njets;
     std::vector<Histo1DPtr> _h_log10_d;
     std::vector<Histo1DPtr> _h_ajets_pT;
-    std::vector<Histo1DPtr> _h_dau_mass;
+    std::vector<Histo1DPtr> _h_ajets_eta;
     std::vector<Histo1DPtr> _h_dau_eta;
     std::vector<Histo1DPtr> _h_dau_pT;
     Histo1DPtr _h_Z_mass, _h_Z_pT, _h_Z_eta, _h_dijet_pT, _h_dijet_mass, _h_dijet_eta;
+    Histo1DPtr _h_HZ_pT, _h_HZ_eta;
+    Histo1DPtr _h_najets, _h_nbjets;
+    Histo1DPtr _h_dR_jj, _h_dphi_jj, _h_deta_jj;
+    Histo1DPtr _h_dR_HZ, _h_dphi_HZ, _h_deta_HZ;
 
   };
 
