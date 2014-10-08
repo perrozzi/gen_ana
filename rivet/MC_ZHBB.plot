@@ -13,6 +13,7 @@ XTwosidedTicks=1
 YTwosidedTicks=1
 ErrorBands=1
 ErrorBars=1
+#Rebin=4
 # END PLOT
 
 # BEGIN PLOT /MC_ZHBB/Z_mass
