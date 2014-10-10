@@ -47,6 +47,9 @@ namespace Rivet {
         // make jets
         FastJets jetpro(jetproinput, FastJets::ANTIKT, 0.5);
         addProjection(jetpro, "jetpro");
+        // jets for differential jet rates
+        FastJets jetpro_kt(jetproinput, FastJets::KT, 0.7);
+        addProjection(jetpro_kt, "jetpro_kt");
 
 
         // ---- HISTOS ----
@@ -111,6 +114,7 @@ namespace Rivet {
         const ZFinder& zmmfinder = applyProjection<ZFinder>(event, "zmmfinder");
         const Particles zll = zeefinder.bosons() + zmmfinder.bosons();
         const FastJets& jetpro = applyProjection<FastJets>(event,"jetpro");
+        const FastJets& jetpro_kt = applyProjection<FastJets>(event,"jetpro_kt");
         const Jets alljets = jetpro.jetsByPt();
        
         // only continue if a Z has been found
@@ -199,7 +203,7 @@ namespace Rivet {
 
         // Jet resolutions and integrated jet rates
         double d_ij;
-        const fastjet::ClusterSequence* seq = jetpro.clusterSeq();
+        const fastjet::ClusterSequence* seq = jetpro_kt.clusterSeq();
         if (seq != NULL) {
             for (size_t i = 0; i < njets; ++i) {
                  // Jet resolution i -> j

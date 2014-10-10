@@ -13,6 +13,8 @@ XTwosidedTicks=1
 YTwosidedTicks=1
 ErrorBands=1
 ErrorBars=1
+LineStyle=solid
+RatioPlotYLabel=ratio
 #Rebin=4
 # END PLOT
 
@@ -40,8 +42,8 @@ LogX=1
 
 # BEGIN PLOT /MC_ZHBB/HZ_pT
 Title=transverse momentum of H-Z system
-XLabel=$p_{T}(Z)$ (GeV)
-YLabel=$\text{d}\sigma/\text{d}p_{T}(Z)$ (pb/GeV)
+XLabel=$p_{T}(HZ)$ (GeV)
+YLabel=$\text{d}\sigma/\text{d}p_{T}(HZ)$ (pb/GeV)
 LogY=1
 LogX=1
 # END PLOT
@@ -128,7 +130,7 @@ LogY=1
 
 # BEGIN PLOT /MC_ZHBB/deta_HZ
 Title=distance in $\eta$ between di-jet and Z
-XLabel=$\Delta_{\eta}(Z,Z)$
+XLabel=$\Delta_{\eta}(H,Z)$
 YLabel=$\text{d}\sigma/\text{d}\Delta_{\eta}(H,Z)$ (pb)
 LogY=1
 # END PLOT
