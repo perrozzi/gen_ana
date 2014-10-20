@@ -229,35 +229,35 @@ namespace Rivet {
     void finalize() {
 
         for (size_t i = 0; i < njets; ++i) {
-            scale(_h_log10_d[i], crossSection()/sumOfWeights());
-            scale(_h_ajets_pT[i], crossSection()/sumOfWeights());
-            scale(_h_ajets_eta[i], crossSection()/sumOfWeights());
+            scale(_h_log10_d[i], 1.0/sumOfWeights());
+            scale(_h_ajets_pT[i], 1.0/sumOfWeights());
+            scale(_h_ajets_eta[i], 1.0/sumOfWeights());
         }
 
         for (size_t i = 0; i < 2; ++i) {
-            scale(_h_dau_eta[i], crossSection()/sumOfWeights());
-            scale(_h_dau_pT[i], crossSection()/sumOfWeights());
+            scale(_h_dau_eta[i], 1.0/sumOfWeights());
+            scale(_h_dau_pT[i], 1.0/sumOfWeights());
         }
 
-        scale(_h_Z_mass, crossSection()/sumOfWeights());
-        scale(_h_Z_eta, crossSection()/sumOfWeights());
-        scale(_h_Z_pT, crossSection()/sumOfWeights());
-        scale(_h_dijet_mass, crossSection()/sumOfWeights());
-        scale(_h_dijet_eta, crossSection()/sumOfWeights());
-        scale(_h_dijet_pT, crossSection()/sumOfWeights());
-        scale(_h_HZ_pT, crossSection()/sumOfWeights());
-        scale(_h_HZ_eta, crossSection()/sumOfWeights());
+        scale(_h_Z_mass, 1.0/sumOfWeights());
+        scale(_h_Z_eta, 1.0/sumOfWeights());
+        scale(_h_Z_pT, 1.0/sumOfWeights());
+        scale(_h_dijet_mass, 1.0/sumOfWeights());
+        scale(_h_dijet_eta, 1.0/sumOfWeights());
+        scale(_h_dijet_pT, 1.0/sumOfWeights());
+        scale(_h_HZ_pT, 1.0/sumOfWeights());
+        scale(_h_HZ_eta, 1.0/sumOfWeights());
 
-        scale(_h_dR_jj, crossSection()/sumOfWeights());
-        scale(_h_deta_jj, crossSection()/sumOfWeights());
-        scale(_h_dphi_jj, crossSection()/sumOfWeights());
+        scale(_h_dR_jj, 1.0/sumOfWeights());
+        scale(_h_deta_jj, 1.0/sumOfWeights());
+        scale(_h_dphi_jj, 1.0/sumOfWeights());
 
-        scale(_h_dR_HZ, crossSection()/sumOfWeights());
-        scale(_h_deta_HZ, crossSection()/sumOfWeights());
-        scale(_h_dphi_HZ, crossSection()/sumOfWeights());
+        scale(_h_dR_HZ, 1.0/sumOfWeights());
+        scale(_h_deta_HZ, 1.0/sumOfWeights());
+        scale(_h_dphi_HZ, 1.0/sumOfWeights());
 
-        scale(_h_najets, crossSection()/sumOfWeights());
-        scale(_h_nbjets, crossSection()/sumOfWeights());
+        scale(_h_najets, 1.0/sumOfWeights());
+        scale(_h_nbjets, 1.0/sumOfWeights());
     }
 
   private:
