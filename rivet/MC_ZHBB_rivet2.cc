@@ -8,7 +8,7 @@
 
 namespace Rivet {
 
-  //using namespace Cuts;
+  using namespace Cuts;
 
   class MC_ZHBB : public Analysis {
   public:
@@ -22,8 +22,7 @@ namespace Rivet {
     /// Book histograms and initialise projections before the run
     void init() {
 
-        //Cut cut = etaIn(-10,10) & (pT >= 0.0*GeV);
-        //Cut cut = pT >= 0.0*GeV;
+        Cut cut = etaIn(-5,5) & (pT >= 0.0*GeV);
 
         // # of jets for the jet ana
         njets = 4;
@@ -32,13 +31,13 @@ namespace Rivet {
         FinalState fs;
         addProjection(fs, "fs");
         // find Zee
-        ZFinder zeefinder(fs, -5, 5, 0, PID::ELECTRON, 65*GeV, 115*GeV, 0.2);
+        ZFinder zeefinder(fs, cut, PID::ELECTRON, 65*GeV, 115*GeV, 0.2);
         addProjection(zeefinder, "zeefinder");
         // fish out Zee
         VetoedFinalState zmminput;
         zmminput.addVetoOnThisFinalState(zeefinder);
         // find Zmm
-        ZFinder zmmfinder(zmminput, -5, 5, 0, PID::MUON, 65*GeV, 115*GeV, 0.2);
+        ZFinder zmmfinder(zmminput, cut, PID::MUON, 65*GeV, 115*GeV, 0.2);
         addProjection(zmmfinder, "zmmfinder");
         // fish out Zee and Zmm
         VetoedFinalState jetproinput;
