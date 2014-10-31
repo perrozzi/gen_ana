@@ -5,6 +5,7 @@
 #include "Rivet/Projections/ZFinder.hh"
 #include "Rivet/Projections/FastJets.hh"
 #include "Rivet/Projections/VetoedFinalState.hh"
+#include "Rivet/Tools/Logging.hh"
 
 namespace Rivet {
 
@@ -22,7 +23,8 @@ namespace Rivet {
     /// Book histograms and initialise projections before the run
     void init() {
 
-        Cut cut = etaIn(-5,5) & (pT >= 0.0*GeV);
+        Cut cut = etaIn(-2.5,2.5) & (pT >= 0.0*GeV);
+        Cut cut2 = etaIn(-2.5,2.5) & (pT >= 20.0*GeV);
 
         // # of jets for the jet ana
         njets = 4;
@@ -31,13 +33,13 @@ namespace Rivet {
         FinalState fs;
         addProjection(fs, "fs");
         // find Zee
-        ZFinder zeefinder(fs, cut, PID::ELECTRON, 65*GeV, 115*GeV, 0.2);
+        ZFinder zeefinder(fs, cut2, PID::ELECTRON, 76*GeV, 106*GeV, 0.2);
         addProjection(zeefinder, "zeefinder");
         // fish out Zee
         VetoedFinalState zmminput;
         zmminput.addVetoOnThisFinalState(zeefinder);
         // find Zmm
-        ZFinder zmmfinder(zmminput, cut, PID::MUON, 65*GeV, 115*GeV, 0.2);
+        ZFinder zmmfinder(zmminput, cut2, PID::MUON, 76*GeV, 106*GeV, 0.2);
         addProjection(zmmfinder, "zmmfinder");
         // fish out Zee and Zmm
         VetoedFinalState jetproinput;
@@ -46,20 +48,14 @@ namespace Rivet {
         // make jets
         FastJets jetpro(jetproinput, FastJets::ANTIKT, 0.5);
         addProjection(jetpro, "jetpro");
-        // jets for differential jet rates
-        FastJets jetpro_kt(jetproinput, FastJets::KT, 0.7);
-        addProjection(jetpro_kt, "jetpro_kt");
-
 
         // ---- HISTOS ----
         int nbins =100;
 
         // jets
         for (size_t i=0; i < njets; ++i) {
-            string dname = "log10_d_" +to_str(i) + to_str(i+1);
-            _h_log10_d.push_back(bookHisto1D(dname, nbins, 0.2, 4));
-            dname = "aJet_pT" +to_str(i);
-            _h_ajets_pT.push_back(bookHisto1D(dname,logspace(nbins,5,300)));
+            string dname = "aJet_pT" +to_str(i);
+            _h_ajets_pT.push_back(bookHisto1D(dname,logspace(nbins,20,300)));
             dname = "aJet_eta" +to_str(i);
             _h_ajets_eta.push_back(bookHisto1D(dname,nbins,-5,5));
         }
@@ -68,25 +64,25 @@ namespace Rivet {
         //double bins[4] = {65, 70, 110, 115};
         //std::vector<double> bin_v(&bins[0], &bins[0]+4);
         //_h_Z_mass = bookHisto1D("Z_mass",bin_v);
-        _h_Z_mass = bookHisto1D("Z_mass",nbins,65,115);
-        _h_Z_eta = bookHisto1D("Z_eta",nbins,-5,5);
-        _h_Z_pT = bookHisto1D("Z_pT",logspace(nbins,5,300));
+        _h_Z_mass = bookHisto1D("Z_mass",nbins,76,106);
+        _h_Z_eta = bookHisto1D("Z_eta",nbins,-2.5,2.5);
+        _h_Z_pT = bookHisto1D("Z_pT",logspace(nbins,80,300));
 
         // dijet properties
         _h_dijet_mass = bookHisto1D("dijet_mass",nbins,60,140);
-        _h_dijet_eta = bookHisto1D("dijet_eta",nbins,-5,5);
-        _h_dijet_pT = bookHisto1D("dijet_pT",logspace(nbins,5,300));
+        _h_dijet_eta = bookHisto1D("dijet_eta",nbins,-2.5,2.5);
+        _h_dijet_pT = bookHisto1D("dijet_pT",logspace(nbins,20,300));
 
         // H+Z properties
         _h_HZ_eta = bookHisto1D("HZ_eta",nbins,-5,5);
-        _h_HZ_pT = bookHisto1D("HZ_pT",logspace(nbins,5,300));
+        _h_HZ_pT = bookHisto1D("HZ_pT",logspace(nbins,20,300));
 
         // higgs jets
         for (size_t i=0; i < 2; ++i) {
             string dname = "h_dau_eta" + to_str(i);
-            _h_dau_eta.push_back(bookHisto1D(dname,nbins,-5,5));
+            _h_dau_eta.push_back(bookHisto1D(dname,nbins,-2.5,2.5));
             dname = "h_dau_pT" + to_str(i);
-            _h_dau_pT.push_back(bookHisto1D(dname,logspace(nbins,5,300)));
+            _h_dau_pT.push_back(bookHisto1D(dname,logspace(nbins,20,300)));
         }
 
         // angles
@@ -110,36 +106,45 @@ namespace Rivet {
         const double weight = event.weight();
 
         double jets_pt_cut = 20.0*GeV;
+        double Zboost = 100.0*GeV;
+
 
         // apply the projections
         const ZFinder& zeefinder = applyProjection<ZFinder>(event, "zeefinder");
         const ZFinder& zmmfinder = applyProjection<ZFinder>(event, "zmmfinder");
         const Particles zll = zeefinder.bosons() + zmmfinder.bosons();
         const FastJets& jetpro = applyProjection<FastJets>(event,"jetpro");
-        const FastJets& jetpro_kt = applyProjection<FastJets>(event,"jetpro_kt");
-        const Jets alljets = jetpro.jetsByPt();
+        const Jets alljets = jetpro.jetsByPt(jets_pt_cut);
        
         // only continue if a Z has been found
         if (zll.empty()) vetoEvent;
+        FourMomentum Z;
+        Z = zll[0].momentum();
+        Log::getLog("Rivet.Analysis.MC_ZHBB") << Log::DEBUG << "Z pt = " << Z.pT() << endl;
+        if (Z.pT() < Zboost) vetoEvent;
 
+        FourMomentum  dijet, HZ;
         Jets ajets;
         ajets.clear();
         Jet h0, h1; 
-        FourMomentum  dijet,Z, HZ;
+
         std::vector<size_t> b_indices;
-        int na = 0.0;
-        int nb = 0.0;
+        b_indices.clear();
+        int na = 0;
+        int nb = 0;
 
         // find all jets with bs
         for (size_t i = 0; i < alljets.size(); ++i) {
             if (alljets[i].containsBottom()) {
                 b_indices.push_back(i);
-                if (alljets[i].pT() > jets_pt_cut) nb++;
+                nb++;
             }
         }
 
         // require at least to b jets
+        if (b_indices.empty()) vetoEvent;
         if (b_indices.size() < 2) vetoEvent;
+        Log::getLog("Rivet.Analysis.MC_ZHBB") << Log::DEBUG << "bs = " << b_indices.size() << endl;
 
         // construct highest dijet pt b-jet pair
         double max_pt = 0.0*GeV;
@@ -162,7 +167,6 @@ namespace Rivet {
         // final highest pt dijet pair
         dijet = h0.momentum() + h1.momentum();
         
-        Z = zll[0].momentum();
 
         // HZ system
         HZ = dijet + Z;
@@ -171,9 +175,11 @@ namespace Rivet {
         for (size_t i = 0; i < alljets.size(); ++i) {
             if (i != idx0 && i != idx1){
                 ajets.push_back(alljets[i]);
-                if (alljets[i].pT() > jets_pt_cut) na++;
+                na++;
             }
         }
+
+        Log::getLog("Rivet.Analysis.MC_ZHBB") << Log::DEBUG << "done!" << endl;
 
         // fill histos
         _h_dau_eta[0]->fill(h0.eta(),weight);
@@ -203,22 +209,12 @@ namespace Rivet {
         _h_deta_HZ->fill(deltaEta(dijet,Z),weight);
         _h_dphi_HZ->fill(deltaPhi(dijet,Z),weight);
 
-        // Jet resolutions and integrated jet rates
-        double d_ij;
-        const fastjet::ClusterSequence* seq = jetpro_kt.clusterSeq();
-        if (seq != NULL) {
-            for (size_t i = 0; i < njets; ++i) {
-                 // Jet resolution i -> j
-                 d_ij = log10(sqrt(seq->exclusive_dmerge_max(i)));
-
-                // Fill differential jet resolution
-                _h_log10_d[i]->fill(d_ij, weight);
-
-                //fill aJet pT histos
-                _h_ajets_pT[i]->fill(ajets[i].pT(),weight);
-                _h_ajets_eta[i]->fill(ajets[i].eta(),weight);
-            }
+        for (int i = 0; (i < na && i < (int)njets); ++i) {
+            //fill aJet pT histos
+            _h_ajets_pT[i]->fill(ajets[i].pT(),weight);
+            _h_ajets_eta[i]->fill(ajets[i].eta(),weight);
         }
+        Log::getLog("Rivet.Analysis.MC_ZHBB") << Log::DEBUG << "Histos filled!" << endl;
     }
 
 
@@ -226,7 +222,6 @@ namespace Rivet {
     void finalize() {
 
         for (size_t i = 0; i < njets; ++i) {
-            scale(_h_log10_d[i], crossSection()/sumOfWeights());
             scale(_h_ajets_pT[i], crossSection()/sumOfWeights());
             scale(_h_ajets_eta[i], crossSection()/sumOfWeights());
         }
@@ -260,7 +255,6 @@ namespace Rivet {
   private:
 
     size_t njets;
-    std::vector<Histo1DPtr> _h_log10_d;
     std::vector<Histo1DPtr> _h_ajets_pT;
     std::vector<Histo1DPtr> _h_ajets_eta;
     std::vector<Histo1DPtr> _h_dau_eta;

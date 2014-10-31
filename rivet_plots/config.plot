@@ -1,8 +1,10 @@
 # BEGIN PLOT /MC_ZHBB/*
 LegendXPos=0.05
-LegendYPos=0.5
+LegendYPos=0.62
 ErrorBars=1
 Rebin=2
+RatioPlotYMin=0
+RatioPlotYMax=2
 # END PLOT
 # BEGIN PLOT /MC_ZHBB/najets
 Rebin=1
