@@ -9,6 +9,12 @@ Sherpa_norm.yoda:"Title:Sherpa-MC@NLO 0j" \
 Sherpa_NLO_012j.yoda:Scale=35:"Title:Sherpa-MC@NLO 0,1,2j" \
 Sherpa_LOPS.yoda:"Title:Sherpa LO+PS" \
 -c config.plot -n 16 -o all
+rivet-mkhtml \
+ZH_merged_sel.yoda:"Title:aMC@NLO 0,1,2j + Herwig6" \
+ZH_inclusive_sel.yoda:"Title:aMC@NLO 0j + Herwig6" \
+Sherpa_sel.yoda:"Title:Sherpa-MC@NLO 0j" \
+Sherpa_LOPS_sel.yoda:"Title:Sherpa LO+PS" \
+-c sel.plot -n 16 -o sel
 #rivet-mkhtml \
 #Sherpa_norm.yoda:"Title:Sherpa-MC@NLO 0j" \
 #Sherpa_LOPS.yoda:"Title:Sherpa LO+PS" \

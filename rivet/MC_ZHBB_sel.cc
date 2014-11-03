@@ -5,11 +5,10 @@
 #include "Rivet/Projections/ZFinder.hh"
 #include "Rivet/Projections/FastJets.hh"
 #include "Rivet/Projections/VetoedFinalState.hh"
-#include "Rivet/Tools/Logging.hh"
 
 namespace Rivet {
 
-  using namespace Cuts;
+  //using namespace Cuts;
 
   class MC_ZHBB : public Analysis {
   public:
@@ -23,9 +22,6 @@ namespace Rivet {
     /// Book histograms and initialise projections before the run
     void init() {
 
-        Cut cut = etaIn(-2.5,2.5) & (pT >= 0.0*GeV);
-        Cut cut2 = etaIn(-2.5,2.5) & (pT >= 20.0*GeV);
-
         // # of jets for the jet ana
         njets = 4;
 
@@ -33,13 +29,13 @@ namespace Rivet {
         FinalState fs;
         addProjection(fs, "fs");
         // find Zee
-        ZFinder zeefinder(fs, cut2, PID::ELECTRON, 76*GeV, 106*GeV, 0.2);
+        ZFinder zeefinder(fs, -2.5, 2.5, 20.0*GeV, ELECTRON, 76*GeV, 106*GeV, 0.2, true, true);
         addProjection(zeefinder, "zeefinder");
         // fish out Zee
         VetoedFinalState zmminput;
         zmminput.addVetoOnThisFinalState(zeefinder);
         // find Zmm
-        ZFinder zmmfinder(zmminput, cut2, PID::MUON, 76*GeV, 106*GeV, 0.2);
+        ZFinder zmmfinder(zmminput, -2.5, 2.5, 20.0*GeV, MUON, 76*GeV, 106*GeV, 0.2, true, true);
         addProjection(zmmfinder, "zmmfinder");
         // fish out Zee and Zmm
         VetoedFinalState jetproinput;
@@ -54,65 +50,66 @@ namespace Rivet {
 
         // jets
         for (size_t i=0; i < njets; ++i) {
-            string dname = "aJet_pT" +to_str(i);
-            _h_ajets_pT.push_back(bookHisto1D(dname,logspace(nbins,20,300)));
-            dname = "aJet_eta" +to_str(i);
-            _h_ajets_eta.push_back(bookHisto1D(dname,nbins,-2.5,2.5));
+            stringstream ptname;
+            ptname << "aJet_pT" << i;
+            _h_ajets_pT.push_back(bookHistogram1D(ptname.str(),logspace(nbins,20,300)));
+            stringstream etaname;
+            etaname << "aJet_eta" << i;
+            _h_ajets_eta.push_back(bookHistogram1D(etaname.str(),nbins,-2.5,2.5));
         }
 
         // Z properties
-        //double bins[4] = {65, 70, 110, 115};
-        //std::vector<double> bin_v(&bins[0], &bins[0]+4);
-        //_h_Z_mass = bookHisto1D("Z_mass",bin_v);
-        _h_Z_mass = bookHisto1D("Z_mass",nbins,76,106);
-        _h_Z_eta = bookHisto1D("Z_eta",nbins,-2.5,2.5);
-        _h_Z_pT = bookHisto1D("Z_pT",logspace(nbins,100,300));
+        _h_Z_mass = bookHistogram1D("Z_mass",nbins,76,106);
+        _h_Z_eta = bookHistogram1D("Z_eta",nbins,-2.5,2.5);
+        _h_Z_pT = bookHistogram1D("Z_pT",logspace(nbins,100,300));
 
         // dijet properties
-        _h_dijet_mass = bookHisto1D("dijet_mass",nbins,60,140);
-        _h_dijet_eta = bookHisto1D("dijet_eta",nbins,-2.5,2.5);
-        _h_dijet_pT = bookHisto1D("dijet_pT",logspace(nbins,20,300));
+        _h_dijet_mass = bookHistogram1D("dijet_mass",nbins,60,140);
+        _h_dijet_eta = bookHistogram1D("dijet_eta",nbins,-2.5,2.5);
+        _h_dijet_pT = bookHistogram1D("dijet_pT",logspace(nbins,20,300));
 
         // H+Z properties
-        _h_HZ_eta = bookHisto1D("HZ_eta",nbins,-5,5);
-        _h_HZ_pT = bookHisto1D("HZ_pT",logspace(nbins,20,300));
+        _h_HZ_eta = bookHistogram1D("HZ_eta",nbins,-5,5);
+        _h_HZ_pT = bookHistogram1D("HZ_pT",logspace(nbins,20,300));
 
         // higgs jets
         for (size_t i=0; i < 2; ++i) {
-            string dname = "h_dau_eta" + to_str(i);
-            _h_dau_eta.push_back(bookHisto1D(dname,nbins,-2.5,2.5));
-            dname = "h_dau_pT" + to_str(i);
-            _h_dau_pT.push_back(bookHisto1D(dname,logspace(nbins,20,300)));
+            stringstream etaname;
+            etaname << "h_dau_eta" << i;
+            _h_dau_eta.push_back(bookHistogram1D(etaname.str(),nbins,-2.5,2.5));
+            stringstream ptname;
+            ptname << "h_dau_pT" << i;
+            _h_dau_pT.push_back(bookHistogram1D(ptname.str(),logspace(nbins,20,300)));
         }
 
         // angles
-        _h_dR_jj = bookHisto1D("dR_jj",nbins,0,5);
-        _h_dphi_jj = bookHisto1D("dphi_jj",nbins,0,3.2);
-        _h_deta_jj = bookHisto1D("deta_jj", nbins,0,5);
+        _h_dR_jj = bookHistogram1D("dR_jj",nbins,0,5);
+        _h_dphi_jj = bookHistogram1D("dphi_jj",nbins,0,3.2);
+        _h_deta_jj = bookHistogram1D("deta_jj", nbins,0,5);
 
-        _h_dR_HZ = bookHisto1D("dR_HZ",nbins,0,5);
-        _h_dphi_HZ = bookHisto1D("dphi_HZ",nbins,0,3.2);
-        _h_deta_HZ = bookHisto1D("deta_HZ", nbins,0,5);
+        _h_dR_HZ = bookHistogram1D("dR_HZ",nbins,0,5);
+        _h_dphi_HZ = bookHistogram1D("dphi_HZ",nbins,0,3.2);
+        _h_deta_HZ = bookHistogram1D("deta_HZ", nbins,0,5);
         
         // nJets
-        _h_najets = bookHisto1D("najets",10,0,10);
-        _h_nbjets = bookHisto1D("nbjets",10,0,10);
+        _h_najets = bookHistogram1D("najets",10,0,10);
+        _h_nbjets = bookHistogram1D("nbjets",10,0,10);
 
 
     }
 
-    /// Perform the per-event analysis
+    // Perform the per-event analysis
     void analyze(const Event& event) {
         const double weight = event.weight();
 
         double jets_pt_cut = 20.0*GeV;
         double Zboost = 100.0*GeV;
 
-
         // apply the projections
         const ZFinder& zeefinder = applyProjection<ZFinder>(event, "zeefinder");
         const ZFinder& zmmfinder = applyProjection<ZFinder>(event, "zmmfinder");
-        const Particles zll = zeefinder.bosons() + zmmfinder.bosons();
+        ParticleVector zll = zeefinder.bosons();
+        zll.insert(zll.end(),zmmfinder.bosons().begin(),zmmfinder.bosons().end());
         const FastJets& jetpro = applyProjection<FastJets>(event,"jetpro");
         const Jets alljets = jetpro.jetsByPt(jets_pt_cut);
        
@@ -120,14 +117,12 @@ namespace Rivet {
         if (zll.empty()) vetoEvent;
         FourMomentum Z;
         Z = zll[0].momentum();
-        Log::getLog("Rivet.Analysis.MC_ZHBB") << Log::DEBUG << "Z pt = " << Z.pT() << endl;
         if (Z.pT() < Zboost) vetoEvent;
 
-        FourMomentum  dijet, HZ;
         Jets ajets;
         ajets.clear();
         Jet h0, h1; 
-
+        FourMomentum  dijet, HZ;
         std::vector<size_t> b_indices;
         b_indices.clear();
         int na = 0;
@@ -146,7 +141,6 @@ namespace Rivet {
         // require at least to b jets
         if (b_indices.empty()) vetoEvent;
         if (b_indices.size() < 2) vetoEvent;
-        Log::getLog("Rivet.Analysis.MC_ZHBB") << Log::DEBUG << "bs = " << b_indices.size() << endl;
 
         // construct highest dijet pt b-jet pair
         double max_pt = 0.0*GeV;
@@ -183,13 +177,11 @@ namespace Rivet {
             }
         }
 
-        Log::getLog("Rivet.Analysis.MC_ZHBB") << Log::DEBUG << "done!" << endl;
-
         // fill histos
         _h_dau_eta[0]->fill(h0.eta(),weight);
         _h_dau_eta[1]->fill(h1.eta(),weight);
-        _h_dau_pT[0]->fill(h0.pT(),weight);
-        _h_dau_pT[1]->fill(h1.pT(),weight);
+        _h_dau_pT[0]->fill(h0.momentum().pT(),weight);
+        _h_dau_pT[1]->fill(h1.momentum().pT(),weight);
 
         _h_Z_mass->fill(Z.mass(),weight);
         _h_Z_eta->fill(Z.eta(),weight);
@@ -215,10 +207,9 @@ namespace Rivet {
 
         for (int i = 0; (i < na && i < (int)njets); ++i) {
             //fill aJet pT histos
-            _h_ajets_pT[i]->fill(ajets[i].pT(),weight);
+            _h_ajets_pT[i]->fill(ajets[i].momentum().pT(),weight);
             _h_ajets_eta[i]->fill(ajets[i].eta(),weight);
         }
-        Log::getLog("Rivet.Analysis.MC_ZHBB") << Log::DEBUG << "Histos filled!" << endl;
     }
 
 
@@ -226,48 +217,49 @@ namespace Rivet {
     void finalize() {
 
         for (size_t i = 0; i < njets; ++i) {
-            scale(_h_ajets_pT[i], crossSection()/sumOfWeights());
-            scale(_h_ajets_eta[i], crossSection()/sumOfWeights());
+            scale(_h_log10_d[i], 1.0/sumOfWeights());
+            scale(_h_ajets_pT[i], 1.0/sumOfWeights());
+            scale(_h_ajets_eta[i], 1.0/sumOfWeights());
         }
 
         for (size_t i = 0; i < 2; ++i) {
-            scale(_h_dau_eta[i], crossSection()/sumOfWeights());
-            scale(_h_dau_pT[i], crossSection()/sumOfWeights());
+            scale(_h_dau_eta[i], 1.0/sumOfWeights());
+            scale(_h_dau_pT[i], 1.0/sumOfWeights());
         }
 
-        scale(_h_Z_mass, crossSection()/sumOfWeights());
-        scale(_h_Z_eta, crossSection()/sumOfWeights());
-        scale(_h_Z_pT, crossSection()/sumOfWeights());
-        scale(_h_dijet_mass, crossSection()/sumOfWeights());
-        scale(_h_dijet_eta, crossSection()/sumOfWeights());
-        scale(_h_dijet_pT, crossSection()/sumOfWeights());
-        scale(_h_HZ_pT, crossSection()/sumOfWeights());
-        scale(_h_HZ_eta, crossSection()/sumOfWeights());
+        scale(_h_Z_mass, 1.0/sumOfWeights());
+        scale(_h_Z_eta, 1.0/sumOfWeights());
+        scale(_h_Z_pT, 1.0/sumOfWeights());
+        scale(_h_dijet_mass, 1.0/sumOfWeights());
+        scale(_h_dijet_eta, 1.0/sumOfWeights());
+        scale(_h_dijet_pT, 1.0/sumOfWeights());
+        scale(_h_HZ_pT, 1.0/sumOfWeights());
+        scale(_h_HZ_eta, 1.0/sumOfWeights());
 
-        scale(_h_dR_jj, crossSection()/sumOfWeights());
-        scale(_h_deta_jj, crossSection()/sumOfWeights());
-        scale(_h_dphi_jj, crossSection()/sumOfWeights());
+        scale(_h_dR_jj, 1.0/sumOfWeights());
+        scale(_h_deta_jj, 1.0/sumOfWeights());
+        scale(_h_dphi_jj, 1.0/sumOfWeights());
 
-        scale(_h_dR_HZ, crossSection()/sumOfWeights());
-        scale(_h_deta_HZ, crossSection()/sumOfWeights());
-        scale(_h_dphi_HZ, crossSection()/sumOfWeights());
+        scale(_h_dR_HZ, 1.0/sumOfWeights());
+        scale(_h_deta_HZ, 1.0/sumOfWeights());
+        scale(_h_dphi_HZ, 1.0/sumOfWeights());
 
-        scale(_h_najets, crossSection()/sumOfWeights());
-        scale(_h_nbjets, crossSection()/sumOfWeights());
+        scale(_h_najets, 1.0/sumOfWeights());
+        scale(_h_nbjets, 1.0/sumOfWeights());
     }
 
   private:
 
     size_t njets;
-    std::vector<Histo1DPtr> _h_ajets_pT;
-    std::vector<Histo1DPtr> _h_ajets_eta;
-    std::vector<Histo1DPtr> _h_dau_eta;
-    std::vector<Histo1DPtr> _h_dau_pT;
-    Histo1DPtr _h_Z_mass, _h_Z_pT, _h_Z_eta, _h_dijet_pT, _h_dijet_mass, _h_dijet_eta;
-    Histo1DPtr _h_HZ_pT, _h_HZ_eta;
-    Histo1DPtr _h_najets, _h_nbjets;
-    Histo1DPtr _h_dR_jj, _h_dphi_jj, _h_deta_jj;
-    Histo1DPtr _h_dR_HZ, _h_dphi_HZ, _h_deta_HZ;
+    std::vector<AIDA::IHistogram1D*> _h_ajets_pT;
+    std::vector<AIDA::IHistogram1D*> _h_ajets_eta;
+    std::vector<AIDA::IHistogram1D*> _h_dau_eta;
+    std::vector<AIDA::IHistogram1D*> _h_dau_pT;
+    AIDA::IHistogram1D *_h_Z_mass, *_h_Z_pT, *_h_Z_eta, *_h_dijet_pT, *_h_dijet_mass, *_h_dijet_eta;
+    AIDA::IHistogram1D *_h_HZ_pT, *_h_HZ_eta;
+    AIDA::IHistogram1D *_h_najets, *_h_nbjets;
+    AIDA::IHistogram1D *_h_dR_jj, *_h_dphi_jj, *_h_deta_jj;
+    AIDA::IHistogram1D *_h_dR_HZ, *_h_dphi_HZ, *_h_deta_HZ;
 
   };
 
