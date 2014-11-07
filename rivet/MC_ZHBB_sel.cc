@@ -217,7 +217,6 @@ namespace Rivet {
     void finalize() {
 
         for (size_t i = 0; i < njets; ++i) {
-            scale(_h_log10_d[i], 1.0/sumOfWeights());
             scale(_h_ajets_pT[i], 1.0/sumOfWeights());
             scale(_h_ajets_eta[i], 1.0/sumOfWeights());
         }
