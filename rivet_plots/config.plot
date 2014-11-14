@@ -1,8 +1,10 @@
 # BEGIN PLOT /MC_ZHBB/*
+Rebin=2
 LegendXPos=0.05
 LegendYPos=0.7
 ErrorBars=1
-Rebin=2
+ErrorBands=1
+ErrorBandOpacity=0.2
 RatioPlotYMin=0
 RatioPlotYMax=2
 # END PLOT

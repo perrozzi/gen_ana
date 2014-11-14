@@ -68,7 +68,7 @@ namespace Rivet {
         //double bins[4] = {65, 70, 110, 115};
         //std::vector<double> bin_v(&bins[0], &bins[0]+4);
         //_h_Z_mass = bookHisto1D("Z_mass",bin_v);
-        _h_Z_mass = bookHisto1D("Z_mass",nbins,65,115);
+        _h_Z_mass = bookHisto1D("Z_mass",nbins,51,131);
         _h_Z_eta = bookHisto1D("Z_eta",nbins,-5,5);
         _h_Z_pT = bookHisto1D("Z_pT",logspace(nbins,5,300));
 
