@@ -3,3 +3,7 @@
 *.root
 *.DS_Store
 *.so
+**/*.html
+**/*.png
+**/*.pdf
+**/*.dat
