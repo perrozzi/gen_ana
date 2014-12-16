@@ -15,15 +15,13 @@ rivet-mkhtml --mc-errs -c config.plot -n 16 \
 powheg_HZ_inc.aida:Scale=$XSEC:ErrorBandColor=red:"Title:Powheg HZ + Pythia8" \
 powheg_HZJ_inc.aida:Scale=$XSEC:ErrorBandColor=red:"Title:Powheg HZJ + Pythia8" \
 amc_pythia_inc.aida:Scale=$XSEC:ErrorBandColor=red:"Title:aMC@NLO 0,1j + Pyhtia8" \
-Sherpa_multijet_inc.yoda:Scale=0.00352:"Title:Sherpa-MC@NLO multijet" \
-Sherpa_Hll_inc.yoda:Scale=0.08:"Title:Sherpa-MC@NLO 0j" \
+Sherpa_multijet_inc.yoda:Scale=0.00176:"Title:Sherpa-MC@NLO multijet" \
 -o inc
 rivet-mkhtml \
 powheg_HZ_sel.aida:Scale=$XSEC:"Title:Powheg HZ + Pythia8" \
 powheg_HZJ_sel.aida:Scale=$XSEC:"Title:Powheg HZJ + Pythia8" \
 amc_pythia_sel.aida:Scale=$XSEC:"Title:aMC@NLO 0,1j + Pyhtia8" \
-Sherpa_multijet_sel.yoda:Scale=0.00352:"Title:Sherpa-MC@NLO multijet" \
-Sherpa_Hll_sel.yoda:Scale=0.0022:"Title:Sherpa-MC@NLO 0j" \
+Sherpa_multijet_sel.yoda:Scale=0.00176:"Title:Sherpa-MC@NLO multijet" \
 --mc-errs -c sel.plot -n 16 -o sel
 rivet-mkhtml \
 powheg_HZ_sel.aida:Scale=$XSEC:"Title:Powheg HZ + Pythia8" \
