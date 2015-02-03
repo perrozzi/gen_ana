@@ -3,7 +3,7 @@ ATLAS_2014_I1279489.yoda \
 AMC_py8_resubmit.yoda:NormalizeToIntegral=1:ErrorBands=1:ErrorBandOpacity=0.2:ErrorBandColor=red:"Title=aMC@NLO + Pythia8"
 
 rivet-mkhtml -n 16 -c ATLAS_2014_I1279489.plot -o LO \
-ATLAS_2014_I1279489.yoda :NormalizeToIntegral=1:ErrorBands=1:ErrorBandOpacity=0.2:LineColor=blue:ErrorBandColor=blue:"Title=Madgraph + Pythia8"
+ATLAS_2014_I1279489.yoda \
 MG_py8_resubmit.yoda:NormalizeToIntegral=1:ErrorBands=1:ErrorBandOpacity=0.2:LineColor=blue:ErrorBandColor=blue:"Title=Madgraph + Pythia8"
 
 rivet-mkhtml -n 16 -c ATLAS_2014_I1279489.plot -o Powheg \
