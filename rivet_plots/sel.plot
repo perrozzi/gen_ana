@@ -1,6 +1,6 @@
 # BEGIN PLOT /MC_ZHBB/*
 LegendXPos=0.05
-LegendYPos=0.7
+LegendYPos=0.37
 ErrorBars=1
 Rebin=4
 RatioPlotYMin=0
