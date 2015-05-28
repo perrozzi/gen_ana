@@ -11,20 +11,20 @@ edm_file_name = sys.argv[1]
 out_file_name = sys.argv[2]
 
 out_file = ROOT.TFile(out_file_name,'RECREATE')
-edm_file = ROOT.TFile(edm_file_name)
-
+edm_file = ROOT.TFile.Open(edm_file_name)
+edm_file.Print()
 out_file.cd()
 
 edm_tree = edm_file.Get('Events')
 ak5_tree = ROOT.TTree('AK5','AK5')
 particles_tree = ROOT.TTree('Particles','Particles')
 
-edm_ak5_size = ROOT.TTreeFormula('isize','recoGenJets_ak5GenJets__GEN.@obj.size()',edm_tree)
+edm_ak5_size = ROOT.TTreeFormula('isize','recoGenJets_ak5GenJets__SIM.@obj.size()',edm_tree)
 ak5_size = array('i',[0])
 ak5_tree.Branch('ak5_size',ak5_size,'ak5_size/I')
 
-edm_particles_size = ROOT.TTreeFormula('isize','recoGenParticles_genParticles__GEN.@obj.size()',edm_tree)
-edm_particles_mother = ROOT.TTreeFormula('imother','recoGenParticles_genParticles__GEN.obj.mother(0)->pdgId()',edm_tree)
+edm_particles_size = ROOT.TTreeFormula('isize','recoGenParticles_genParticles__SIM.@obj.size()',edm_tree)
+edm_particles_mother = ROOT.TTreeFormula('imother','recoGenParticles_genParticles__SIM.obj.mother(0)->pdgId()',edm_tree)
 particles_size = array('i',[0])
 particles_tree.Branch('particles_size',particles_size,'particles_size/I')
 
@@ -38,8 +38,8 @@ ParticlesFormulas = {}
 AK5Arrays = {}
 ParticlesArrays = {}
 for var,type in zip(vars,types):
-    AK5Formulas[var] = ROOT.TTreeFormula('i%s'%var,'recoGenJets_ak5GenJets__GEN.obj.%s_'%var,edm_tree)
-    ParticlesFormulas[var] = ROOT.TTreeFormula('i%s'%var,'recoGenParticles_genParticles__GEN.obj.%s_'%var,edm_tree)
+    AK5Formulas[var] = ROOT.TTreeFormula('i%s'%var,'recoGenJets_ak5GenJets__SIM.obj.%s_'%var,edm_tree)
+    ParticlesFormulas[var] = ROOT.TTreeFormula('i%s'%var,'recoGenParticles_genParticles__SIM.obj.%s_'%var,edm_tree)
     AK5Arrays[var] = array(type,[0]*100)
     ParticlesArrays[var] = array(type,[0]*10000)
     ak5_tree.Branch(var,AK5Arrays[var],'ak5_%s[ak5_size]/%s'%(var,type.upper()))
